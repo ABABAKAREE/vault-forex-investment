@@ -1,0 +1,43 @@
+{
+  "balance": 24583.1,
+  "recentActivities": [
+    {
+      "title": "Invested in Vault 01",
+      "status": "Completed"
+    },
+    {
+      "title": "Deposit $12.50",
+      "status": "Completed"
+    },
+    {
+      "title": "Deposit $500",
+      "status": "Completed"
+    },
+    {
+      "title": "Payout $88",
+      "status": "Sent"
+    },
+    {
+      "title": "Deposit $1,200",
+      "status": "Pending"
+    },
+    {
+      "title": "Payout $240",
+      "status": "Completed"
+    },
+    {
+      "title": "Payout $120",
+      "status": "Review"
+    }
+  ],
+  "vaults": {
+    "vault-01": {
+      "name": "Vault 01",
+      "capital": 10,
+      "roi": 17,
+      "activatedAt": "2026-08-09T14:31:37.211Z",
+      "payoutStart": "2026-08-16T00:00:00.000Z",
+      "status": "active"
+    }
+  }
+}

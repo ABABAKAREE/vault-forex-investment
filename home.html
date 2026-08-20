@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vault Invest - Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="https://s3.tradingview.com/tv.js"></script>
+  </head>
+  <body class="vault-body">
+    <main class="main-area">
+      <section class="panel hero-banner" aria-label="Home banner">
+        <div class="hero-copy">
+          <p class="hero-kicker">VAULT INVEST HOME</p>
+          <h1>Trade Smarter. Grow Weekly.</h1>
+          <p>Track wallet activity, follow the market, and activate premium vaults from one refined workspace.</p>
+        </div>
+        <div class="hero-highlights">
+          <div class="hero-highlight">
+            <span>Live Signals</span>
+            <strong>+12.8%</strong>
+          </div>
+          <div class="hero-highlight">
+            <span>Fast Payouts</span>
+            <strong>7 Days</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-grid" aria-label="Portfolio summary">
+        <article class="panel total-balance-widget" aria-label="Total balance summary">
+          <p class="wallet-label">TOTAL BALANCE</p>
+          <p class="total-balance-value" data-total-balance>$0.00</p>
+          <p class="total-balance-caption">Active funds ready for deposits, withdrawals, and vault activation.</p>
+        </article>
+
+        <article class="panel wallet-card" aria-label="Wallet actions">
+          <div class="wallet-summary">
+            <p class="wallet-label">WALLET BALANCE</p>
+            <p class="wallet-amount" id="wallet-balance" data-total-balance>$0.00</p>
+          </div>
+          <div class="wallet-actions">
+            <button class="wallet-btn deposit" type="button" data-transaction-action="deposit">Deposit</button>
+            <button class="wallet-btn withdraw" type="button" data-transaction-action="withdraw">Withdraw</button>
+          </div>
+          <div class="wallet-methods-preview">
+            <span class="method-pill">M-Pesa</span>
+            <span class="method-pill">Tigo Pesa</span>
+            <span class="method-pill">Airtel Money</span>
+            <span class="method-pill">USDT</span>
+            <span class="method-pill">BTC</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel market-panel" aria-label="Active trading pairs">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">ACTIVE TRADING PAIRS</p>
+            <h2>Live forex overview with embedded candlestick charts</h2>
+          </div>
+          <div class="section-badge" id="market-open-badge">OPEN</div>
+        </div>
+
+        <div class="market-carousel">
+          <div class="panel carousel-window compact-carousel">
+            <div class="carousel-track" id="market-carousel-track">
+              <article class="carousel-slide compact-slide">
+                <h3 class="panel-title">FOREX PAIRS 1/2</h3>
+                <div class="pair-grid-compact">
+                  <article class="pair-tile" data-market-ticker="EURUSD" data-market-symbol="FX:EURUSD">
+                    <div class="pair-head">
+                      <p class="pair-name">EUR/USD</p>
+                      <p class="pair-price" data-pair-price>Loading...</p>
+                    </div>
+                    <div class="tv-widget-host" data-tv-widget="FX:EURUSD"></div>
+                  </article>
+                  <article class="pair-tile" data-market-ticker="GBPUSD" data-market-symbol="FX:GBPUSD">
+                    <div class="pair-head">
+                      <p class="pair-name">GBP/USD</p>
+                      <p class="pair-price" data-pair-price>Loading...</p>
+                    </div>
+                    <div class="tv-widget-host" data-tv-widget="FX:GBPUSD"></div>
+                  </article>
+                  <article class="pair-tile" data-market-ticker="USDJPY" data-market-symbol="FX:USDJPY">
+                    <div class="pair-head">
+                      <p class="pair-name">USD/JPY</p>
+                      <p class="pair-price" data-pair-price>Loading...</p>
+                    </div>
+                    <div class="tv-widget-host" data-tv-widget="FX:USDJPY"></div>
+                  </article>
+                </div>
+              </article>
+
+              <article class="carousel-slide compact-slide">
+                <h3 class="panel-title">FOREX PAIRS 2/2</h3>
+                <div class="pair-grid-compact pair-grid-two">
+                  <article class="pair-tile" data-market-ticker="AUDUSD" data-market-symbol="FX:AUDUSD">
+                    <div class="pair-head">
+                      <p class="pair-name">AUD/USD</p>
+                      <p class="pair-price" data-pair-price>Loading...</p>
+                    </div>
+                    <div class="tv-widget-host" data-tv-widget="FX:AUDUSD"></div>
+                  </article>
+                  <article class="pair-tile" data-market-ticker="USDCAD" data-market-symbol="FX:USDCAD">
+                    <div class="pair-head">
+                      <p class="pair-name">USD/CAD</p>
+                      <p class="pair-price" data-pair-price>Loading...</p>
+                    </div>
+                    <div class="tv-widget-host" data-tv-widget="FX:USDCAD"></div>
+                  </article>
+                </div>
+                <div class="market-status-box" id="market-status-box">
+                  <p class="market-status-label">FOREX MARKET STATUS</p>
+                  <div class="market-status-row">
+                    <span class="market-badge open" id="market-open-badge-inline">OPEN</span>
+                    <span class="market-countdown" id="market-countdown">Live session active</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="carousel-slide compact-slide">
+                <h3 class="panel-title">RECENT ACTIVITY</h3>
+                <ul class="activity-list compact-list" id="recent-activity-list">
+                  <li><span>No transactions yet.</span><span class="status review">Waiting</span></li>
+                </ul>
+                <div class="sentiment-box">
+                  <p class="sentiment-label">Weekly Sentiment</p>
+                  <p class="sentiment-value" id="weekly-sentiment">Calculating...</p>
+                </div>
+              </article>
+
+              <article class="carousel-slide compact-slide promo-slide" aria-label="Weekly promo banner">
+                <div class="promo-slide-inner">
+                  <div class="promo-slide-main">
+                    <div class="promo-slide-visual" aria-hidden="true">
+                      <div class="promo-ring promo-ring-outer"></div>
+                      <div class="promo-ring promo-ring-inner"></div>
+                      <div class="promo-shield">
+                        <span class="promo-shield-top"></span>
+                        <span class="promo-shield-bottom"></span>
+                      </div>
+                      <div class="promo-glow"></div>
+                    </div>
+
+                    <div class="promo-slide-copy">
+                      <p class="promo-slide-kicker">MARKET STATUS: OPEN</p>
+                      <h3>BOOST YOUR PORTFOLIO</h3>
+                      <p class="promo-slide-subtitle">WEEKLY FOREX VAULT PROMOTION</p>
+                      <div class="promo-slide-foot">JOIN THE ELITE TRADERS. LIMITED SLOTS.</div>
+                    </div>
+                  </div>
+
+                  <div class="promo-slide-tiers" aria-label="Promotion tiers">
+                    <article class="promo-tier-card">
+                      <div>
+                        <strong>STARTER</strong>
+                        <span>+17% ROI</span>
+                      </div>
+                      <button type="button" class="wallet-btn deposit">INVEST NOW</button>
+                    </article>
+                    <article class="promo-tier-card">
+                      <div>
+                        <strong>GROWTH</strong>
+                        <span>+20% ROI</span>
+                      </div>
+                      <button type="button" class="wallet-btn deposit">INVEST NOW</button>
+                    </article>
+                    <article class="promo-tier-card">
+                      <div>
+                        <strong>PREMIUM</strong>
+                        <span>+23% ROI</span>
+                      </div>
+                      <button type="button" class="wallet-btn deposit">INVEST NOW</button>
+                    </article>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+          <div class="carousel-dots" id="market-carousel-dots" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <section class="vault-section" aria-label="Investment Vaults">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">INVESTMENT VAULTS</p>
+            <h2>Featured vaults for this week</h2>
+          </div>
+          <a class="pill-link" href="plans.html">Explore tiers</a>
+        </div>
+        <div class="vault-grid" id="vault-grid" data-featured-only="true"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Bottom navigation">
+      <a class="active" href="home.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.2 12 4l8 6.2V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" fill="currentColor" /></svg>
+        <span>Home</span>
+      </a>
+      <a href="plans.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5zM8 8h8M8 12h8M8 16h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        <span>Pledge</span>
+      </a>
+      <a href="my-account.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        <span>My Account</span>
+      </a>
+      <a href="settings.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7Zm7.3-3.5a7.8 7.8 0 0 0-.1-1.2l2-1.6-2-3.4-2.5 1a8.2 8.2 0 0 0-2.1-1.2L14.3 3h-4.6l-.3 2.6a8.2 8.2 0 0 0-2.1 1.2l-2.5-1-2 3.4 2 1.6a7.8 7.8 0 0 0 0 2.4l-2 1.6 2 3.4 2.5-1a8.2 8.2 0 0 0 2.1 1.2l.3 2.6h4.6l.3-2.6a8.2 8.2 0 0 0 2.1-1.2l2.5 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <div class="modal-backdrop hidden" id="transaction-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="transaction-modal-title">
+        <div class="modal-header">
+          <div>
+            <p class="modal-kicker" id="transaction-modal-kicker">Secure Wallet</p>
+            <h2 id="transaction-modal-title">Deposit</h2>
+          </div>
+          <button class="modal-close" type="button" data-close-modal aria-label="Close transaction modal">x</button>
+        </div>
+
+        <p class="modal-copy">Select your preferred payment gateway to continue in a secure transaction interface.</p>
+
+        <div class="payment-methods-grid" aria-label="Accepted payment methods">
+          <button class="payment-method-card" type="button" data-payment-method="mpesa">
+            <span class="method-logo mpesa">M</span>
+            <span>M-Pesa</span>
+          </button>
+          <button class="payment-method-card" type="button" data-payment-method="tigo">
+            <span class="method-logo tigo">T</span>
+            <span>Tigo Pesa</span>
+          </button>
+          <button class="payment-method-card" type="button" data-payment-method="airtel">
+            <span class="method-logo airtel">A</span>
+            <span>Airtel Money</span>
+          </button>
+          <button class="payment-method-card" type="button" data-payment-method="usdt">
+            <span class="method-logo usdt">U</span>
+            <span>USDT</span>
+          </button>
+          <button class="payment-method-card" type="button" data-payment-method="btc">
+            <span class="method-logo btc">B</span>
+            <span>BTC</span>
+          </button>
+          <button class="payment-method-card" type="button" data-payment-method="bank">
+            <span class="method-logo bank">B</span>
+            <span>Bank Transfer</span>
+          </button>
+        </div>
+
+        <div class="modal-actions">
+          <button class="primary-btn" type="button" id="continue-transaction" disabled>Continue</button>
+          <button class="secondary-btn" type="button" data-close-modal>Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="transaction-form-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="transaction-form-title">
+        <div class="modal-header">
+          <div>
+            <p class="modal-kicker" id="transaction-form-kicker">Secure Transaction</p>
+            <h2 id="transaction-form-title">Deposit Details</h2>
+          </div>
+          <button class="modal-close" type="button" data-close-form-modal aria-label="Close transaction form">x</button>
+        </div>
+
+        <p class="modal-copy" id="transaction-form-copy">Enter the account details and amount to continue.</p>
+
+        <form class="transaction-form" id="transaction-form">
+          <div class="form-grid transaction-grid">
+            <label class="field-group">
+              <span id="transaction-account-label">Phone Number / Wallet Address</span>
+              <input type="text" id="transaction-account-input" placeholder="Enter payment details" autocomplete="off" />
+            </label>
+            <label class="field-group">
+              <span>Amount (USD)</span>
+              <input type="number" id="transaction-amount-input" min="1" step="0.01" placeholder="0.00" />
+            </label>
+          </div>
+
+          <label class="field-group transaction-reference-group">
+            <span id="transaction-reference-label">Reference / Transaction ID</span>
+            <input type="text" id="transaction-reference-input" placeholder="Optional reference" />
+          </label>
+
+          <div class="transaction-note" id="transaction-note">Mobile money payments may trigger STK push verification.</div>
+
+          <div class="modal-actions">
+            <button class="primary-btn" type="submit" id="submit-transaction">Submit</button>
+            <button class="secondary-btn" type="button" data-close-form-modal>Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Crypto deposit address modal -->
+    <div class="modal-backdrop hidden" id="crypto-address-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="crypto-address-title">
+        <div class="modal-header">
+          <div>
+            <p class="modal-kicker" id="crypto-address-kicker">Crypto Deposit</p>
+            <h2 id="crypto-address-title">Send to this address</h2>
+          </div>
+          <button class="modal-close" type="button" id="close-crypto-modal" aria-label="Close crypto modal">x</button>
+        </div>
+        <p class="modal-copy" id="crypto-address-instruction">Send the exact amount below to the address shown. Your balance will be credited after blockchain confirmation.</p>
+        <div class="crypto-address-box">
+          <p class="crypto-label">Deposit Address</p>
+          <div class="crypto-address-row">
+            <code id="crypto-address-value" class="crypto-address-code">—</code>
+            <button class="pill-link" type="button" id="copy-crypto-address">Copy</button>
+          </div>
+          <p class="crypto-label" style="margin-top:14px">Amount to Send</p>
+          <p id="crypto-pay-amount" class="crypto-amount-display">—</p>
+          <p class="crypto-expire-note" id="crypto-expire-note"></p>
+        </div>
+        <p class="transaction-note" style="margin-top:12px">Do NOT close this page until you have copied the address. Confirmations may take 10–60 minutes.</p>
+      </div>
+    </div>
+
+    <!-- Bank transfer details modal -->
+    <div class="modal-backdrop hidden" id="bank-details-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bank-details-title">
+        <div class="modal-header">
+          <div>
+            <p class="modal-kicker">Bank Transfer</p>
+            <h2 id="bank-details-title">Company Bank Details</h2>
+          </div>
+          <button class="modal-close" type="button" id="close-bank-modal" aria-label="Close bank modal">x</button>
+        </div>
+        <p class="modal-copy">Transfer your deposit to the account below. Use the reference number so your payment is credited automatically.</p>
+        <dl class="bank-details-list" id="bank-details-list"></dl>
+        <p class="transaction-note" style="margin-top:12px">Processing may take 1–2 business days. Keep your bank receipt until your balance is updated.</p>
+      </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="vault-confirm-modal" aria-hidden="true">
+        <div class="modal-header">
+          <div>
+            <p class="modal-kicker">Vault Confirmation</p>
+            <h2 id="vault-confirm-title">Activate Vault</h2>
+          </div>
+          <button class="modal-close" type="button" data-close-vault-modal aria-label="Close vault confirmation">x</button>
+        </div>
+
+        <div class="vault-confirm-summary" id="vault-confirm-summary"></div>
+        <div class="modal-actions">
+          <button class="primary-btn" type="button" id="confirm-vault-button">Confirm Investment</button>
+          <button class="secondary-btn" type="button" data-close-vault-modal>Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>

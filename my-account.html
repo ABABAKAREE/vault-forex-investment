@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vault Invest - My Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body class="vault-body">
+    <main class="main-area">
+      <section class="panel topbar">
+        <div class="topbar-copy">
+          <p class="topbar-kicker">My Account</p>
+          <h1>Manage your profile in one focused view</h1>
+          <p>Keep your personal details, account reference, and password controls secure and easy to update.</p>
+        </div>
+        <div class="topbar-actions">
+          <a class="pill-link" href="home.html">Home</a>
+          <a class="pill-link primary" href="settings.html">Settings</a>
+        </div>
+      </section>
+
+      <section class="panel account-panel" aria-label="User Profile Information">
+        <div class="form-grid">
+          <label class="field-group">
+            <span>Full Name</span>
+            <input type="text" value="" placeholder="Enter full name" />
+          </label>
+
+          <label class="field-group">
+            <span>Email Address</span>
+            <input type="email" value="" placeholder="you@example.com" />
+          </label>
+
+          <label class="field-group">
+            <span>Phone Number</span>
+            <input type="tel" value="" placeholder="+255 7XX XXX XXX" />
+          </label>
+
+          <label class="field-group">
+            <span>Account Number / ID</span>
+            <input type="text" value="" placeholder="Generated after verification" readonly />
+          </label>
+
+          <div class="field-group password-field">
+            <span>Password</span>
+            <div class="field-inline">
+              <input type="password" value="" id="account-password" readonly placeholder="********" />
+              <button type="button" class="small-btn" id="toggle-password">Show</button>
+              <button type="button" class="small-btn" id="edit-password">Edit</button>
+            </div>
+          </div>
+
+          <label class="field-group">
+            <span>Registration Date</span>
+            <input type="text" value="" placeholder="Will appear after account activation" readonly />
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="primary-btn">Save Profile Updates</button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Bottom navigation">
+      <a href="home.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.2 12 4l8 6.2V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" fill="currentColor" /></svg>
+        <span>Home</span>
+      </a>
+      <a href="plans.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5zM8 8h8M8 12h8M8 16h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        <span>Pledge</span>
+      </a>
+      <a class="active" href="my-account.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        <span>My Account</span>
+      </a>
+      <a href="settings.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7Zm7.3-3.5a7.8 7.8 0 0 0-.1-1.2l2-1.6-2-3.4-2.5 1a8.2 8.2 0 0 0-2.1-1.2L14.3 3h-4.6l-.3 2.6a8.2 8.2 0 0 0-2.1 1.2l-2.5-1-2 3.4 2 1.6a7.8 7.8 0 0 0 0 2.4l-2 1.6 2 3.4 2.5-1a8.2 8.2 0 0 0 2.1 1.2l.3 2.6h4.6l.3-2.6a8.2 8.2 0 0 0 2.1-1.2l2.5 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>

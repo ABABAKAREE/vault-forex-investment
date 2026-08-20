@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vault Invest - Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body class="vault-body">
+    <main class="main-area">
+      <section class="panel topbar">
+        <div class="topbar-copy">
+          <p class="topbar-kicker">Settings</p>
+          <h1>Fine-tune the experience to your preference</h1>
+          <p>Adjust the theme, language, and your session controls without leaving the app shell.</p>
+        </div>
+        <div class="topbar-actions">
+          <a class="pill-link" href="my-account.html">Account</a>
+          <a class="pill-link primary" href="home.html">Home</a>
+        </div>
+      </section>
+
+      <section class="panel settings-panel" aria-label="Platform Settings">
+        <div class="setting-row">
+          <div>
+            <h2>Theme Toggle</h2>
+            <p>Switch between Dark Theme and Light Theme.</p>
+          </div>
+          <label class="switch-control" for="theme-toggle">
+            <input type="checkbox" id="theme-toggle" />
+            <span class="switch-track"></span>
+            <span class="switch-label">Light Theme</span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <h2>Language Selector</h2>
+            <p>Choose your preferred display language.</p>
+          </div>
+          <label class="field-group compact" for="language-selector">
+            <span>Language</span>
+            <select id="language-selector">
+              <option value="en">English</option>
+              <option value="sw">Swahili</option>
+              <option value="fr">French</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="setting-row logout-row">
+          <div>
+            <h2>Logout</h2>
+            <p>End your session and return to the landing page.</p>
+          </div>
+          <button type="button" class="danger-btn" data-logout>Logout Now</button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Bottom navigation">
+      <a href="home.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.2 12 4l8 6.2V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" fill="currentColor" /></svg>
+        <span>Home</span>
+      </a>
+      <a href="plans.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5zM8 8h8M8 12h8M8 16h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        <span>Pledge</span>
+      </a>
+      <a href="my-account.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        <span>My Account</span>
+      </a>
+      <a class="active" href="settings.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7Zm7.3-3.5a7.8 7.8 0 0 0-.1-1.2l2-1.6-2-3.4-2.5 1a8.2 8.2 0 0 0-2.1-1.2L14.3 3h-4.6l-.3 2.6a8.2 8.2 0 0 0-2.1 1.2l-2.5-1-2 3.4 2 1.6a7.8 7.8 0 0 0 0 2.4l-2 1.6 2 3.4 2.5-1a8.2 8.2 0 0 0 2.1 1.2l.3 2.6h4.6l.3-2.6a8.2 8.2 0 0 0 2.1-1.2l2.5 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
