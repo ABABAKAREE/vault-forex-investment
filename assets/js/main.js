@@ -368,10 +368,18 @@ const submitTransactionRequest = async (endpoint, payload) => {
       return { ok: false, message: 'Please enter a valid amount.' };
     }
 
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (!token) {
+      return { ok: false, status: 401, message: 'Please sign in again before submitting a transaction.' };
+    }
+
     return await apiRequest(endpoint, {
       method: 'POST',
       body: JSON.stringify(payload),
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
     });
   }
 
