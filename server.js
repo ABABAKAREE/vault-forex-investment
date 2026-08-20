@@ -15,6 +15,8 @@ const webhookRoutes = require('./src/routes/webhookRoutes');
 const { startPayoutJob } = require('./src/jobs/payoutJob');
 
 const app = express();
+const isProduction = process.env.NODE_ENV === 'production';
+const configuredOrigin = process.env.APP_ORIGIN || appOrigin;
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -36,13 +38,15 @@ app.use(
 );
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || origin === appOrigin || origin === 'null') {
-        callback(null, true);
-      } else {
-        callback(new Error('CORS origin denied'));
-      }
-    },
+    origin: isProduction
+      ? true
+      : (origin, callback) => {
+        if (!origin || origin === configuredOrigin || origin === 'null') {
+          callback(null, true);
+        } else {
+          callback(new Error('CORS origin denied'));
+        }
+      },
     credentials: true,
   })
 );
