@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="assets/css/style.css" />
-    <script src="https://s3.tradingview.com/tv.js"></script>
   </head>
   <body class="vault-body">
     <main class="main-area">
@@ -42,10 +41,6 @@
             <p class="wallet-label">WALLET BALANCE</p>
             <p class="wallet-amount" id="wallet-balance" data-total-balance>$0.00</p>
           </div>
-          <div class="wallet-actions">
-            <button class="wallet-btn deposit" type="button" data-transaction-action="deposit">Deposit</button>
-            <button class="wallet-btn withdraw" type="button" data-transaction-action="withdraw">Withdraw</button>
-          </div>
           <div class="wallet-methods-preview">
             <span class="method-pill">M-Pesa</span>
             <span class="method-pill">Tigo Pesa</span>
@@ -54,6 +49,28 @@
             <span class="method-pill">BTC</span>
           </div>
         </article>
+      </section>
+
+      <section class="home-actions" aria-label="Quick wallet actions">
+        <div class="section-head home-actions-head">
+          <div>
+            <p class="section-kicker">QUICK ACTIONS</p>
+            <h2>Move money in seconds</h2>
+          </div>
+          <span class="section-badge">SECURE</span>
+        </div>
+        <div class="home-action-grid">
+          <button class="home-action-card deposit" type="button" data-transaction-action="deposit">
+            <span class="home-action-icon" aria-hidden="true">+</span>
+            <span><strong>Deposit</strong><small>Add funds to your wallet</small></span>
+            <span class="home-action-arrow" aria-hidden="true">→</span>
+          </button>
+          <button class="home-action-card withdraw" type="button" data-transaction-action="withdraw">
+            <span class="home-action-icon" aria-hidden="true">↗</span>
+            <span><strong>Withdraw</strong><small>Send funds to your account</small></span>
+            <span class="home-action-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
       </section>
 
       <section class="panel market-panel" aria-label="Active trading pairs">

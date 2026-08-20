@@ -1104,10 +1104,20 @@ function initializeMarketCarousel() {
   let timerId;
 
   const updateCarousel = () => {
-    track.style.transform = `translateX(-${index * 100}%)`;
+    slides[index]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
     dots.forEach((dot, dotIndex) => {
       dot.classList.toggle('active', dotIndex === index);
     });
+  };
+
+  const syncActiveDot = () => {
+    const nextIndex = Math.round(track.scrollLeft / track.clientWidth);
+    if (nextIndex !== index && nextIndex >= 0 && nextIndex < slides.length) {
+      index = nextIndex;
+      dots.forEach((dot, dotIndex) => {
+        dot.classList.toggle('active', dotIndex === index);
+      });
+    }
   };
 
   const startAutoSlide = () => {
@@ -1137,6 +1147,7 @@ function initializeMarketCarousel() {
   track.addEventListener('mouseleave', startAutoSlide);
   track.addEventListener('touchstart', stopAutoSlide, { passive: true });
   track.addEventListener('touchend', startAutoSlide, { passive: true });
+  track.addEventListener('scroll', syncActiveDot, { passive: true });
 
   updateCarousel();
   startAutoSlide();
@@ -1148,71 +1159,37 @@ function initializeTradingViewWidgets() {
     return;
   }
 
-  const fallback = {
-    EURUSD: '1.09240',
-    GBPUSD: '1.27280',
-    USDJPY: '148.420',
-    AUDUSD: '0.66350',
-    USDCAD: '1.37710',
-  };
+  const formatDate = (date) => date.toISOString().slice(0, 10);
+  const formatPrice = (price, quote) => quote === 'JPY' ? price.toFixed(3) : price.toFixed(5);
 
-  const configuredWidgets = new Set();
-
-  const initWidget = (card) => {
-    const symbol = card.dataset.marketSymbol;
-    if (!symbol || configuredWidgets.has(symbol) || typeof TradingView === 'undefined') {
-      return;
-    }
+  const renderPairChart = (card, values) => {
     const widgetHost = card.querySelector('[data-tv-widget]');
-    if (!widgetHost) {
+    const validValues = values.filter((value) => Number.isFinite(value));
+    if (!widgetHost || validValues.length < 2) {
       return;
     }
-    configuredWidgets.add(symbol);
-    const hostId = `tv-${symbol.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
-    widgetHost.id = hostId;
-    new TradingView.widget({
-      autosize: true,
-      symbol,
-      interval: '30',
-      timezone: 'Etc/UTC',
-      theme: 'dark',
-      style: '1',
-      locale: 'en',
-      hide_top_toolbar: true,
-      hide_legend: true,
-      withdateranges: false,
-      allow_symbol_change: false,
-      save_image: false,
-      container_id: hostId,
-    });
+
+    const min = Math.min(...validValues);
+    const max = Math.max(...validValues);
+    const range = max - min || max * 0.001 || 1;
+    const points = validValues
+      .map((value, index) => {
+        const x = 4 + (index / (validValues.length - 1)) * 212;
+        const y = 82 - ((value - min) / range) * 68;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      })
+      .join(' ');
+
+    widgetHost.innerHTML = `
+      <div class="chart-fallback" aria-label="${card.dataset.marketTicker} recent rate chart">
+        <svg viewBox="0 0 220 90" role="img">
+          <polyline points="${points}"></polyline>
+        </svg>
+      </div>
+    `;
   };
 
-  // Show fallback prices immediately — no visible "Loading..." wait
-  cards.forEach((card) => {
-    const ticker = card.dataset.marketTicker;
-    const priceNode = card.querySelector('[data-pair-price]');
-    if (priceNode && ticker && fallback[ticker]) {
-      priceNode.textContent = fallback[ticker];
-      priceNode.classList.add('neutral');
-    }
-  });
-
-  // Lazy-init TradingView widgets only when a card scrolls into view
-  const widgetObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          initWidget(entry.target);
-          widgetObserver.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.1 }
-  );
-  cards.forEach((card) => widgetObserver.observe(card));
-
-  // Stagger live price fetches so they don't all hit the network at once
-  cards.forEach((card, i) => {
+  const fetchPairData = async (card) => {
     const ticker = card.dataset.marketTicker;
     const priceNode = card.querySelector('[data-pair-price]');
     if (!priceNode || !ticker) {
@@ -1222,26 +1199,42 @@ function initializeTradingViewWidgets() {
     const from = ticker.slice(0, 3);
     const to = ticker.slice(3, 6);
 
-    const fetchPrice = () => {
-      fetch(`https://api.frankfurter.dev/v1/latest?from=${from}&to=${to}`)
-        .then((r) => (r.ok ? r.json() : Promise.reject()))
-        .then((data) => {
-          const price = Number(data?.rates?.[to]);
-          if (!Number.isFinite(price)) {
-            throw new Error('invalid price');
-          }
-          priceNode.textContent = to === 'JPY' ? price.toFixed(3) : price.toFixed(5);
-          priceNode.classList.remove('bearish', 'neutral');
-          priceNode.classList.add('bullish');
-        })
-        .catch(() => {
-          // keep fallback already shown
-        });
-    };
+    const endDate = new Date();
+    const startDate = new Date(endDate);
+    startDate.setUTCDate(startDate.getUTCDate() - 14);
+    const latestUrl = `https://api.frankfurter.dev/v1/latest?from=${from}&to=${to}`;
+    const historyUrl = `https://api.frankfurter.dev/v1/${formatDate(startDate)}..${formatDate(endDate)}?from=${from}&to=${to}`;
 
-    // Stagger: 0 ms, 400 ms, 800 ms, 1200 ms, 1600 ms
-    setTimeout(fetchPrice, i * 400);
-    setInterval(fetchPrice, 60000);
+    priceNode.textContent = 'Fetching...';
+    try {
+      const [latestResponse, historyResponse] = await Promise.all([fetch(latestUrl), fetch(historyUrl)]);
+      if (!latestResponse.ok || !historyResponse.ok) {
+        throw new Error('Market data unavailable');
+      }
+
+      const [latest, history] = await Promise.all([latestResponse.json(), historyResponse.json()]);
+      const price = Number(latest?.rates?.[to]);
+      const values = Object.keys(history?.rates || {})
+        .sort()
+        .map((date) => Number(history.rates[date]?.[to]));
+      if (!Number.isFinite(price) || values.length < 2) {
+        throw new Error('Invalid market data');
+      }
+
+      priceNode.textContent = formatPrice(price, to);
+      priceNode.classList.remove('bearish', 'neutral');
+      priceNode.classList.add('bullish');
+      renderPairChart(card, values);
+    } catch (_error) {
+      priceNode.textContent = 'Unavailable';
+      priceNode.classList.remove('bullish', 'bearish');
+      priceNode.classList.add('neutral');
+    }
+  };
+
+  cards.forEach((card, index) => {
+    window.setTimeout(() => fetchPairData(card), index * 250);
+    window.setInterval(() => fetchPairData(card), 60000);
   });
 }
 
