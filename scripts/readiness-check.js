@@ -89,9 +89,21 @@ if (providerMode === 'live') {
   ];
 
   const hasProvider = providers.some((p) => p.base && p.key && p.deposit && p.withdraw);
-  if (!hasProvider) {
+  const hasAzampayClientCredentials = [
+    envMap.get('AZAMPAY_APP_NAME'),
+    envMap.get('AZAMPAY_CLIENT_ID'),
+    envMap.get('AZAMPAY_CLIENT_SECRET'),
+    envMap.get('AZAMPAY_ACCOUNT_NUMBER'),
+  ].every(Boolean);
+
+  if (!hasProvider && !hasAzampayClientCredentials) {
     hasFailure = true;
-    fail('PAYMENT_PROVIDER_MODE=live but no provider is fully configured.');
+    fail('PAYMENT_PROVIDER_MODE=live but no provider or complete AzamPay client credentials are configured.');
+  }
+
+  if (envMap.get('NOWPAYMENTS_API_KEY') && !envMap.get('NOWPAYMENTS_IPN_SECRET')) {
+    hasFailure = true;
+    fail('NOWPAYMENTS_API_KEY is configured but NOWPAYMENTS_IPN_SECRET is missing.');
   }
 }
 

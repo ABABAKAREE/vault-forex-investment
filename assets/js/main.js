@@ -505,7 +505,7 @@ const initializeAuthForm = () => {
     emailInput?.select();
   };
 
-  const submitAuth = (mode) => {
+  const submitAuth = async (mode) => {
     const email = emailInput.value.trim();
     const password = passwordInput.value;
     const fullName = fullNameInput?.value.trim();
@@ -525,12 +525,12 @@ const initializeAuthForm = () => {
 
     setFeedback(mode === 'register' ? 'Creating account...' : 'Signing in...');
 
-    const result = authenticateLocally({
-      mode,
-      fullName,
-      email,
-      password,
-      phone,
+    const result = await apiRequest(`/api/auth/${mode === 'register' ? 'register' : 'login'}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(mode === 'register'
+        ? { fullName, email, password, phone }
+        : { email, password }),
     });
 
     if (!result?.ok || !result?.token) {
@@ -863,9 +863,14 @@ const openBankDetailsModal = async (amountUsd) => {
   modal.setAttribute('aria-hidden', 'false');
 
   try {
-    const token = localStorage.getItem('vault_token');
-    const res = await fetch('/api/payments/bank-details', {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    const res = await fetch('/api/payments/bank-deposit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ amount: amountUsd }),
     });
     const data = await res.json();
 

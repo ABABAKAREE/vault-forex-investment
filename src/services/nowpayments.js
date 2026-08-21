@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const axios = require('axios');
 
 const API_BASE = 'https://api.nowpayments.io/v1';
@@ -42,4 +43,32 @@ const createPayment = async ({ currency, amountUsd, orderId }) => {
   };
 };
 
-module.exports = { createPayment };
+const sortObject = (value) => {
+  if (Array.isArray(value)) {
+    return value.map(sortObject);
+  }
+  if (value && typeof value === 'object') {
+    return Object.keys(value).sort().reduce((result, key) => {
+      result[key] = sortObject(value[key]);
+      return result;
+    }, {});
+  }
+  return value;
+};
+
+const verifyIpnSignature = (payload, signature) => {
+  const secret = process.env.NOWPAYMENTS_IPN_SECRET || '';
+  if (!secret || !signature) {
+    return false;
+  }
+
+  const expected = crypto
+    .createHmac('sha512', secret)
+    .update(JSON.stringify(sortObject(payload)))
+    .digest('hex');
+
+  return String(signature).length === expected.length
+    && crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(String(signature)));
+};
+
+module.exports = { createPayment, verifyIpnSignature };

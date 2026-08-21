@@ -66,5 +66,6 @@ module.exports = {
   appOrigin: process.env.APP_ORIGIN || 'http://localhost:3000',
   paymentProviderMode,
   paymentWebhookSecret: process.env.PAYMENT_WEBHOOK_SECRET || '',
+  nowpaymentsIpnSecret: process.env.NOWPAYMENTS_IPN_SECRET || '',
   providerConfig,
 };

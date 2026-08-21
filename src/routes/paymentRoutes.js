@@ -22,6 +22,39 @@ router.get('/bank-details', authenticate, (_req, res) => {
   });
 });
 
+router.post('/bank-deposit', authenticate, async (req, res, next) => {
+  const amount = Number(req.body?.amount);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    res.status(400).json({ ok: false, message: 'A positive deposit amount is required.' });
+    return;
+  }
+
+  try {
+    const reference = `VI-BANK-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+    const result = await pool.query(
+      `INSERT INTO transactions (user_id, tx_type, channel, amount_usd, status, external_reference, metadata)
+       VALUES ($1, 'deposit', 'bank', $2, 'pending', $3, $4)
+       RETURNING id, external_reference`,
+      [req.user.id, amount, reference, JSON.stringify({ account: 'manual-bank-transfer' })]
+    );
+
+    res.json({
+      ok: true,
+      transactionId: result.rows[0].id,
+      reference: result.rows[0].external_reference,
+      bank: process.env.BANK_NAME || 'CRDB Bank Tanzania',
+      accountName: process.env.BANK_ACCOUNT_NAME || 'Vault Invest Ltd',
+      accountNumber: process.env.BANK_ACCOUNT_NUMBER || '',
+      branch: process.env.BANK_BRANCH || '',
+      swiftCode: process.env.BANK_SWIFT || '',
+      currency: 'TZS / USD',
+      note: 'Include your reference number in the bank transfer description so your deposit is credited quickly.',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 /** Generate a crypto deposit address via NOWPayments */
 router.post('/crypto-deposit', authenticate, async (req, res, next) => {
   const { currency, amount } = req.body || {};
@@ -108,6 +141,16 @@ router.post('/deposit', authenticate, async (req, res, next) => {
       txId: tx.rows[0].id,
     });
 
+    if (!providerResult.accepted) {
+      await client.query(
+        `UPDATE transactions SET status = 'failed', metadata = metadata || $1::jsonb WHERE id = $2`,
+        [JSON.stringify({ provider: providerResult.provider, providerResponse: providerResult.raw || null }), tx.rows[0].id]
+      );
+      await client.query('COMMIT');
+      res.status(502).json({ ok: false, message: 'The payment provider rejected the deposit request.' });
+      return;
+    }
+
     await client.query(
       `UPDATE transactions
        SET external_reference = $1, metadata = metadata || $2::jsonb
@@ -179,6 +222,19 @@ router.post('/withdraw', authenticate, async (req, res, next) => {
       amount: parsedAmount,
       txId: tx.rows[0].id,
     });
+
+    if (!providerResult.accepted) {
+      await client.query('UPDATE accounts SET balance_usd = balance_usd + $1 WHERE user_id = $2', [parsedAmount, req.user.id]);
+      await client.query(
+        `UPDATE transactions
+         SET external_reference = $1, metadata = metadata || $2::jsonb, status = 'failed'
+         WHERE id = $3`,
+        [providerResult.externalReference, JSON.stringify({ provider: providerResult.provider, providerResponse: providerResult.raw || null }), tx.rows[0].id]
+      );
+      await client.query('COMMIT');
+      res.status(502).json({ ok: false, message: 'The payment provider rejected the withdrawal request.' });
+      return;
+    }
 
     await client.query(
       `UPDATE transactions
