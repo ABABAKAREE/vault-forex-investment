@@ -5,6 +5,13 @@ const BASE_URLS = {
   sandbox: 'https://sandbox.azampay.co.tz',
 };
 
+const AUTH_BASE_URLS = {
+  live: 'https://checkout.azampay.co.tz',
+  sandbox: 'https://sandbox.azampay.co.tz',
+};
+
+const AUTH_PATH = '/authenticator/api/Account/GenerateToken';
+
 let tokenCache = { token: null, expiresAt: 0 };
 
 const providerError = (message) => {
@@ -14,9 +21,10 @@ const providerError = (message) => {
   return error;
 };
 
-const logAzamPayError = (operation, error) => {
+const logAzamPayError = (operation, error, requestUrl) => {
   const details = {
     operation,
+    requestUrl,
     message: error?.message || 'Unknown Axios error',
     code: error?.code || null,
     status: error?.response?.status || null,
@@ -28,7 +36,16 @@ const logAzamPayError = (operation, error) => {
 };
 
 const getBaseUrl = () =>
-  process.env.AZAMPAY_ENV === 'sandbox' ? BASE_URLS.sandbox : BASE_URLS.live;
+  String(process.env.AZAMPAY_ENV || 'live').toLowerCase() === 'sandbox'
+    ? BASE_URLS.sandbox
+    : BASE_URLS.live;
+
+const getAuthUrl = () => {
+  const configuredUrl = String(process.env.AZAMPAY_AUTH_URL || '').trim().replace(/\/$/, '');
+  const environment = String(process.env.AZAMPAY_ENV || 'live').toLowerCase();
+  const baseUrl = configuredUrl || AUTH_BASE_URLS[environment] || AUTH_BASE_URLS.live;
+  return `${baseUrl}${AUTH_PATH}`;
+};
 
 const getToken = async () => {
   if (tokenCache.token && Date.now() < tokenCache.expiresAt - 60_000) {
@@ -36,9 +53,10 @@ const getToken = async () => {
   }
 
   let data;
+  const requestUrl = getAuthUrl();
   try {
     ({ data } = await axios.post(
-      `${getBaseUrl()}/authenticator/api/Account/GenerateToken`,
+      requestUrl,
       {
         appName: process.env.AZAMPAY_APP_NAME,
         clientId: process.env.AZAMPAY_CLIENT_ID,
@@ -47,11 +65,15 @@ const getToken = async () => {
       { timeout: 10_000 }
     ));
   } catch (error) {
-    logAzamPayError('GenerateToken', error);
+    logAzamPayError('GenerateToken', error, requestUrl);
     throw providerError('Mobile money provider authentication failed. Check AzamPay credentials and environment.');
   }
 
   if (!data?.success || !data?.data?.accessToken) {
+    console.error('[AzamPay] GenerateToken returned an invalid response:', {
+      requestUrl,
+      responseData: data || null,
+    });
     throw providerError(`Mobile money provider rejected authentication: ${data?.message || 'unknown'}`);
   }
 
