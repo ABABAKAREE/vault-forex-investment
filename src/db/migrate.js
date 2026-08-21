@@ -9,8 +9,11 @@ CREATE TABLE IF NOT EXISTS users (
   full_name TEXT NOT NULL,
   phone TEXT,
   password_hash TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'user';
 
 CREATE TABLE IF NOT EXISTS accounts (
   user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
@@ -59,6 +62,22 @@ CREATE TABLE IF NOT EXISTS payment_webhooks (
   payload JSONB NOT NULL,
   received_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS manual_deposits (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  network_selected TEXT NOT NULL CHECK (network_selected IN ('mpesa', 'tigo', 'airtel', 'halopesa')),
+  amount_usd NUMERIC(14,2) NOT NULL CHECK (amount_usd > 0),
+  transaction_id TEXT NOT NULL,
+  receipt_image_url TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+  reviewed_by UUID REFERENCES users(id),
+  reviewed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS manual_deposits_network_transaction_idx
+ON manual_deposits (network_selected, transaction_id);
 
 CREATE OR REPLACE FUNCTION set_updated_at()
 RETURNS TRIGGER AS $$

@@ -12,6 +12,7 @@ const accountRoutes = require('./src/routes/accountRoutes');
 const paymentRoutes = require('./src/routes/paymentRoutes');
 const vaultRoutes = require('./src/routes/vaultRoutes');
 const webhookRoutes = require('./src/routes/webhookRoutes');
+const manualDepositRoutes = require('./src/routes/manualDepositRoutes');
 const { startPayoutJob } = require('./src/jobs/payoutJob');
 
 const app = express();
@@ -32,6 +33,7 @@ app.use(
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
         'script-src': ["'self'", 'https://s3.tradingview.com'],
         'connect-src': ["'self'", 'https://api.frankfurter.dev'],
+        'img-src': ["'self'", 'data:', 'https://cdn.simpleicons.org'],
       },
     },
   })
@@ -52,6 +54,7 @@ app.use(
 );
 app.use('/api', apiLimiter);
 app.use('/api/webhooks', webhookRoutes);
+app.use('/api/manual-deposits', manualDepositRoutes);
 app.use(express.json({ limit: '1mb' }));
 
 app.get('/api/health', (_req, res) => {

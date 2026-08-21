@@ -629,7 +629,37 @@ const transactionAmountInput = document.getElementById('transaction-amount-input
 const transactionReferenceLabel = document.getElementById('transaction-reference-label');
 const transactionReferenceInput = document.getElementById('transaction-reference-input');
 const transactionNote = document.getElementById('transaction-note');
+const manualAccountPanel = document.getElementById('manual-account-panel');
+const manualAccountName = document.getElementById('manual-account-name');
+const manualAccountNumber = document.getElementById('manual-account-number');
+const receiptField = document.getElementById('receipt-field');
+const receiptInput = document.getElementById('receipt-input');
 const closeFormModalButtons = document.querySelectorAll('[data-close-form-modal]');
+
+const loadManualDepositNetwork = async (network) => {
+  if (!manualAccountPanel || !manualAccountNumber) return;
+  manualAccountPanel.classList.remove('hidden');
+  manualAccountNumber.textContent = 'Loading...';
+  const response = await apiRequest('/api/manual-deposits/networks');
+  const details = response?.networks?.[network];
+  if (response?.ok && details) {
+    manualAccountName.textContent = response.accountName;
+    manualAccountNumber.textContent = details.phone || 'Number not configured';
+  } else {
+    manualAccountNumber.textContent = 'Unable to load account number';
+  }
+};
+
+document.getElementById('copy-manual-account')?.addEventListener('click', async () => {
+  const value = manualAccountNumber?.textContent?.trim();
+  if (!value || value === 'Loading...') return;
+  await navigator.clipboard.writeText(value);
+  const button = document.getElementById('copy-manual-account');
+  if (button) {
+    button.textContent = 'Copied';
+    window.setTimeout(() => { button.textContent = 'Copy'; }, 1200);
+  }
+});
 
 const openTransactionForm = () => {
   if (!transactionFormModal || !transactionFormTitle || !transactionFormKicker || !transactionFormCopy || !transactionAccountLabel || !transactionAccountInput || !transactionAmountInput || !transactionReferenceLabel || !transactionNote) {
@@ -673,9 +703,25 @@ const openTransactionForm = () => {
       : 'Withdrawals are reviewed and sent within 1 business day.';
   }
 
+  if (isDeposit && !isCrypto && !isBank) {
+    if (accountRow) accountRow.style.display = 'none';
+    if (referenceRow) referenceRow.style.display = '';
+    transactionReferenceLabel.textContent = 'Transaction ID / Reference Number';
+    transactionFormCopy.textContent = 'Send money to the account shown, then submit your transaction ID and receipt.';
+    transactionNote.textContent = 'Your deposit will remain pending until an administrator verifies the receipt.';
+    receiptField?.classList.remove('hidden');
+    if (receiptInput) receiptInput.required = true;
+    loadManualDepositNetwork(method);
+  } else {
+    manualAccountPanel?.classList.add('hidden');
+    receiptField?.classList.add('hidden');
+    if (receiptInput) receiptInput.required = false;
+  }
+
   transactionAccountInput.value = '';
   transactionAmountInput.value = '';
   transactionReferenceInput.value = '';
+  if (receiptInput) receiptInput.value = '';
   transactionFormModal.classList.remove('hidden');
   transactionFormModal.setAttribute('aria-hidden', 'false');
 };
@@ -717,7 +763,7 @@ transactionForm?.addEventListener('submit', async (event) => {
     return;
   }
   if (!isCrypto && !isBank && !accountValue) {
-    return;
+    if (transactionState.type !== 'deposit') return;
   }
 
   const closeForm = () => {
@@ -727,32 +773,28 @@ transactionForm?.addEventListener('submit', async (event) => {
     }
   };
 
-  // ── CRYPTO DEPOSIT ──────────────────────────────────────────────────
-  if (transactionState.type === 'deposit' && isCrypto) {
-    const submitBtn = document.getElementById('submit-transaction');
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Generating address…'; }
-
-    const result = await submitTransactionRequest('/api/payments/crypto-deposit', {
-      currency: method,
-      amount,
-    });
-
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit'; }
-
-    if (result?.ok === false) {
-      alert(result.message || 'Could not generate deposit address. Try again.');
+  if (transactionState.type === 'deposit' && !isCrypto && !isBank) {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (!token || !transactionReferenceInput?.value.trim() || !receiptInput?.files?.[0]) {
+      alert('Transaction ID and a receipt image are required.');
       return;
     }
-
-    closeForm();
-    openCryptoAddressModal(result, method.toUpperCase(), amount);
-    return;
-  }
-
-  // ── BANK DEPOSIT ─────────────────────────────────────────────────────
-  if (transactionState.type === 'deposit' && isBank) {
-    closeForm();
-    openBankDetailsModal(amount);
+    const formData = new FormData();
+    formData.append('networkSelected', method);
+    formData.append('amount', String(amount));
+    formData.append('transactionId', transactionReferenceInput.value.trim());
+    formData.append('receipt', receiptInput.files[0]);
+    const result = await fetch(`${API_BASE_URL}/api/manual-deposits`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    }).then(async (response) => ({ ok: response.ok, ...(await response.json().catch(() => ({}))) }));
+    if (result.ok) {
+      closeForm();
+      alert('Deposit submitted. It is pending admin verification.');
+    } else {
+      alert(result.message || 'Could not submit manual deposit.');
+    }
     return;
   }
 

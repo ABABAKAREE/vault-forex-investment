@@ -1,9 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../db/pool');
-const { jwtSecret, jwtExpiresIn } = require('../config/env');
+const { jwtSecret, jwtExpiresIn, adminEmail } = require('../config/env');
 
-const signToken = (user) => jwt.sign({ email: user.email }, jwtSecret, { subject: user.id, expiresIn: jwtExpiresIn });
+const getRole = (user) => user.role === 'admin' || String(user.email).toLowerCase() === adminEmail ? 'admin' : 'user';
+const signToken = (user) => jwt.sign({ email: user.email, role: getRole(user) }, jwtSecret, { subject: user.id, expiresIn: jwtExpiresIn });
 
 const register = async ({ fullName, email, phone, password }) => {
   const passwordHash = await bcrypt.hash(password, 12);
@@ -15,7 +16,7 @@ const register = async ({ fullName, email, phone, password }) => {
     const inserted = await client.query(
       `INSERT INTO users (full_name, email, phone, password_hash)
        VALUES ($1, $2, $3, $4)
-       RETURNING id, full_name, email, phone, created_at`,
+      RETURNING id, full_name, email, phone, role, created_at`,
       [fullName, email.toLowerCase(), phone || null, passwordHash]
     );
 
@@ -35,7 +36,7 @@ const register = async ({ fullName, email, phone, password }) => {
 
 const login = async ({ email, password }) => {
   const result = await pool.query(
-    'SELECT id, full_name, email, phone, password_hash, created_at FROM users WHERE email = $1',
+    'SELECT id, full_name, email, phone, role, password_hash, created_at FROM users WHERE email = $1',
     [email.toLowerCase()]
   );
 
@@ -56,6 +57,7 @@ const login = async ({ email, password }) => {
       full_name: user.full_name,
       email: user.email,
       phone: user.phone,
+      role: getRole(user),
       created_at: user.created_at,
     },
     token,

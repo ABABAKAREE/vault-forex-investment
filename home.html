@@ -243,32 +243,30 @@
           <button class="modal-close" type="button" data-close-modal aria-label="Close transaction modal">x</button>
         </div>
 
-        <p class="modal-copy">Select your preferred payment gateway to continue in a secure transaction interface.</p>
+        <p class="modal-copy">Send money manually, then submit your transaction details for verification.</p>
+
+        <ol class="manual-deposit-steps">
+          <li><strong>Step 1:</strong> Copy the phone number shown for your network.</li>
+          <li><strong>Step 2:</strong> Send money from your phone.</li>
+          <li><strong>Step 3:</strong> Enter the Transaction ID and upload your receipt.</li>
+        </ol>
 
         <div class="payment-methods-grid" aria-label="Accepted payment methods">
           <button class="payment-method-card" type="button" data-payment-method="mpesa">
-            <span class="method-logo mpesa">M</span>
+            <img class="method-logo-image" src="https://cdn.simpleicons.org/mpesa/39a935" alt="" />
             <span>M-Pesa</span>
           </button>
           <button class="payment-method-card" type="button" data-payment-method="tigo">
-            <span class="method-logo tigo">T</span>
+            <img class="method-logo-image" src="https://cdn.simpleicons.org/tigo/ffcf00" alt="" />
             <span>Tigo Pesa</span>
           </button>
           <button class="payment-method-card" type="button" data-payment-method="airtel">
-            <span class="method-logo airtel">A</span>
+            <img class="method-logo-image" src="https://cdn.simpleicons.org/airtel/ed1c24" alt="" />
             <span>Airtel Money</span>
           </button>
-          <button class="payment-method-card" type="button" data-payment-method="usdt">
-            <span class="method-logo usdt">U</span>
-            <span>USDT</span>
-          </button>
-          <button class="payment-method-card" type="button" data-payment-method="btc">
-            <span class="method-logo btc">B</span>
-            <span>BTC</span>
-          </button>
-          <button class="payment-method-card" type="button" data-payment-method="bank">
-            <span class="method-logo bank">B</span>
-            <span>Bank Transfer</span>
+          <button class="payment-method-card" type="button" data-payment-method="halopesa">
+            <img class="method-logo-image" src="https://cdn.simpleicons.org/halotel/ff7900" alt="" />
+            <span>HaloPesa</span>
           </button>
         </div>
 
@@ -291,6 +289,15 @@
 
         <p class="modal-copy" id="transaction-form-copy">Enter the account details and amount to continue.</p>
 
+        <div class="manual-account-panel hidden" id="manual-account-panel">
+          <p class="manual-account-label">SEND TO THIS ACCOUNT</p>
+          <p class="manual-account-name" id="manual-account-name">Vault Invest Ltd</p>
+          <div class="manual-account-number-row">
+            <strong id="manual-account-number">Loading...</strong>
+            <button class="pill-link" type="button" id="copy-manual-account">Copy</button>
+          </div>
+        </div>
+
         <form class="transaction-form" id="transaction-form">
           <div class="form-grid transaction-grid">
             <label class="field-group">
@@ -306,6 +313,11 @@
           <label class="field-group transaction-reference-group">
             <span id="transaction-reference-label">Reference / Transaction ID</span>
             <input type="text" id="transaction-reference-input" placeholder="Optional reference" />
+          </label>
+
+          <label class="field-group hidden" id="receipt-field">
+            <span>Upload Receipt (JPG, PNG, or WEBP)</span>
+            <input type="file" id="receipt-input" accept="image/jpeg,image/png,image/webp" />
           </label>
 
           <div class="transaction-note" id="transaction-note">Mobile money payments may trigger STK push verification.</div>

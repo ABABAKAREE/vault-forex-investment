@@ -18,6 +18,7 @@ const createMockState = () => ({
   users: [],
   accounts: new Map(),
   transactions: [],
+  manualDeposits: [],
   vaultInvestments: [],
   vaultCatalog: vaultSeed.map((vault) => ({ ...vault })),
   paymentWebhooks: [],
@@ -79,6 +80,7 @@ const createMockClient = (state) => ({
             full_name: user.full_name,
             email: user.email,
             phone: user.phone,
+            role: 'user',
             created_at: createdAt,
           },
         ],
@@ -94,10 +96,49 @@ const createMockClient = (state) => ({
       return Promise.resolve({ rows: [], rowCount: 0, command: 'INSERT' });
     }
 
-    if (upper.includes('SELECT ID, FULL_NAME, EMAIL, PHONE, PASSWORD_HASH, CREATED_AT FROM USERS WHERE EMAIL =')) {
+    if (upper.includes('SELECT ID, FULL_NAME, EMAIL, PHONE, ROLE, PASSWORD_HASH, CREATED_AT FROM USERS WHERE EMAIL =')) {
       const [email] = params;
       const user = this.state.users.find((entry) => entry.email === String(email).toLowerCase());
       return Promise.resolve({ rows: user ? [user] : [], rowCount: user ? 1 : 0, command: 'SELECT' });
+    }
+
+    if (upper.includes('INSERT INTO MANUAL_DEPOSITS')) {
+      const [userId, network, amount, transactionId, receiptImageUrl] = params;
+      const duplicate = this.state.manualDeposits.find((entry) => entry.network_selected === network && entry.transaction_id === transactionId);
+      if (duplicate) return Promise.reject(new Error('manual_deposits_network_transaction_idx duplicate key'));
+      const deposit = {
+        id: `mock-deposit-${this.state.manualDeposits.length + 1}`,
+        user_id: userId,
+        network_selected: network,
+        amount_usd: Number(amount),
+        transaction_id: transactionId,
+        receipt_image_url: receiptImageUrl,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      };
+      this.state.manualDeposits.push(deposit);
+      return Promise.resolve({ rows: [{ id: deposit.id, status: deposit.status, created_at: deposit.created_at }], rowCount: 1, command: 'INSERT' });
+    }
+
+    if (upper.includes('SELECT ID, NETWORK_SELECTED, AMOUNT_USD, TRANSACTION_ID, RECEIPT_IMAGE_URL')) {
+      const rows = this.state.manualDeposits.filter((entry) => entry.status === 'pending').map((entry) => {
+        const user = this.state.users.find((candidate) => candidate.id === entry.user_id) || {};
+        return { ...entry, email: user.email, full_name: user.full_name };
+      });
+      return Promise.resolve({ rows, rowCount: rows.length, command: 'SELECT' });
+    }
+
+    if (upper.includes('SELECT ID, USER_ID, AMOUNT_USD, STATUS FROM MANUAL_DEPOSITS')) {
+      const [depositId] = params;
+      const deposit = this.state.manualDeposits.find((entry) => entry.id === depositId);
+      return Promise.resolve({ rows: deposit ? [{ id: deposit.id, user_id: deposit.user_id, amount_usd: deposit.amount_usd, status: deposit.status }] : [], rowCount: deposit ? 1 : 0, command: 'SELECT' });
+    }
+
+    if (upper.includes('UPDATE MANUAL_DEPOSITS SET STATUS')) {
+      const [status, reviewer, depositId] = params;
+      const deposit = this.state.manualDeposits.find((entry) => entry.id === depositId);
+      if (deposit) { deposit.status = status; deposit.reviewed_by = reviewer; deposit.reviewed_at = new Date().toISOString(); }
+      return Promise.resolve({ rows: [], rowCount: deposit ? 1 : 0, command: 'UPDATE' });
     }
 
     if (upper.includes('SELECT BALANCE_USD FROM ACCOUNTS WHERE USER_ID =')) {

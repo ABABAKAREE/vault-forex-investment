@@ -36,6 +36,9 @@ if (!fs.existsSync(envPath)) {
 }
 
 const envMap = parseEnv(fs.readFileSync(envPath, 'utf8'));
+Object.entries(process.env).forEach(([key, value]) => {
+  if (value) envMap.set(key, value);
+});
 const required = ['DATABASE_URL', 'JWT_SECRET', 'APP_ORIGIN'];
 required.forEach((key) => {
   const val = envMap.get(key);
@@ -51,60 +54,10 @@ if (jwtSecret.includes('change-this') || jwtSecret.length < 16) {
   fail('JWT_SECRET looks weak/default. Use a long random secret (16+ chars).');
 }
 
-const webhook = envMap.get('PAYMENT_WEBHOOK_SECRET') || '';
-if (!webhook || webhook.includes('change-this')) {
+const networks = ['MANUAL_MPESA_PHONE', 'MANUAL_TIGO_PHONE', 'MANUAL_AIRTEL_PHONE', 'MANUAL_HALOPESA_PHONE'];
+if (!networks.some((key) => envMap.get(key))) {
   hasFailure = true;
-  fail('PAYMENT_WEBHOOK_SECRET is missing or default-like.');
-}
-
-const providerMode = (envMap.get('PAYMENT_PROVIDER_MODE') || 'mock').toLowerCase();
-if (!['mock', 'live'].includes(providerMode)) {
-  hasFailure = true;
-  fail('PAYMENT_PROVIDER_MODE must be mock or live.');
-}
-
-if (providerMode === 'live') {
-  const providers = [
-    {
-      name: 'AZAMPAY',
-      base: envMap.get('AZAMPAY_BASE_URL'),
-      key: envMap.get('AZAMPAY_API_KEY'),
-      deposit: envMap.get('AZAMPAY_DEPOSIT_PATH'),
-      withdraw: envMap.get('AZAMPAY_WITHDRAW_PATH'),
-    },
-    {
-      name: 'INTASEND',
-      base: envMap.get('INTASEND_BASE_URL'),
-      key: envMap.get('INTASEND_API_KEY'),
-      deposit: envMap.get('INTASEND_DEPOSIT_PATH'),
-      withdraw: envMap.get('INTASEND_WITHDRAW_PATH'),
-    },
-    {
-      name: 'FLUTTERWAVE',
-      base: envMap.get('FLUTTERWAVE_BASE_URL'),
-      key: envMap.get('FLUTTERWAVE_API_KEY'),
-      deposit: envMap.get('FLUTTERWAVE_DEPOSIT_PATH'),
-      withdraw: envMap.get('FLUTTERWAVE_WITHDRAW_PATH'),
-    },
-  ];
-
-  const hasProvider = providers.some((p) => p.base && p.key && p.deposit && p.withdraw);
-  const hasAzampayClientCredentials = [
-    envMap.get('AZAMPAY_APP_NAME'),
-    envMap.get('AZAMPAY_CLIENT_ID'),
-    envMap.get('AZAMPAY_CLIENT_SECRET'),
-    envMap.get('AZAMPAY_ACCOUNT_NUMBER'),
-  ].every(Boolean);
-
-  if (!hasProvider && !hasAzampayClientCredentials) {
-    hasFailure = true;
-    fail('PAYMENT_PROVIDER_MODE=live but no provider or complete AzamPay client credentials are configured.');
-  }
-
-  if (envMap.get('NOWPAYMENTS_API_KEY') && !envMap.get('NOWPAYMENTS_IPN_SECRET')) {
-    hasFailure = true;
-    fail('NOWPAYMENTS_API_KEY is configured but NOWPAYMENTS_IPN_SECRET is missing.');
-  }
+  fail('At least one manual mobile-money destination number is required.');
 }
 
 print('Running auth regression tests...');

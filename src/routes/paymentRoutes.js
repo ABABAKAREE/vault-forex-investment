@@ -2,8 +2,6 @@ const express = require('express');
 const pool = require('../db/pool');
 const { authenticate } = require('../middleware/auth');
 const { initiateDeposit, initiateWithdrawal } = require('../services/paymentProvider');
-const nowpayments = require('../services/nowpayments');
-const { paymentProviderMode } = require('../config/env');
 
 const router = express.Router();
 
@@ -49,66 +47,6 @@ router.post('/bank-deposit', authenticate, async (req, res, next) => {
       swiftCode: process.env.BANK_SWIFT || '',
       currency: 'TZS / USD',
       note: 'Include your reference number in the bank transfer description so your deposit is credited quickly.',
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-/** Generate a crypto deposit address via NOWPayments */
-router.post('/crypto-deposit', authenticate, async (req, res, next) => {
-  const { currency, amount } = req.body || {};
-  const parsedAmount = Number(amount);
-
-  if (!currency || !Number.isFinite(parsedAmount) || parsedAmount <= 0) {
-    res.status(400).json({ ok: false, message: 'currency and a positive amount are required' });
-    return;
-  }
-
-  if (paymentProviderMode !== 'live') {
-    const mockAddresses = { usdt: 'TXmockUSDTaddress1234567890abcdef', btc: '1MockBTCaddressXYZ9876543210abcd' };
-    res.json({
-      ok: true,
-      payAddress: mockAddresses[String(currency).toLowerCase()] || 'mock-address',
-      payAmount: parsedAmount,
-      payCurrency: currency,
-      note: 'This is a mock address. Switch PAYMENT_PROVIDER_MODE to live for real addresses.',
-    });
-    return;
-  }
-
-  try {
-    const client = await pool.connect();
-    let txId;
-    try {
-      const tx = await client.query(
-        `INSERT INTO transactions (user_id, tx_type, channel, amount_usd, status)
-         VALUES ($1, 'deposit', $2, $3, 'pending') RETURNING id`,
-        [req.user.id, currency, parsedAmount]
-      );
-      txId = tx.rows[0].id;
-    } finally {
-      client.release();
-    }
-
-    const result = await nowpayments.createPayment({
-      currency,
-      amountUsd: parsedAmount,
-      orderId: String(txId),
-    });
-
-    await pool.query(
-      `UPDATE transactions SET external_reference = $1, metadata = $2::jsonb WHERE id = $3`,
-      [result.paymentId, JSON.stringify({ payAddress: result.payAddress, payCurrency: result.payCurrency }), txId]
-    );
-
-    res.json({
-      ok: true,
-      payAddress: result.payAddress,
-      payAmount: result.payAmount,
-      payCurrency: result.payCurrency,
-      expiresAt: result.expiresAt,
-      transactionId: txId,
     });
   } catch (error) {
     next(error);

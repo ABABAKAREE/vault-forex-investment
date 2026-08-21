@@ -12,13 +12,22 @@ const authenticate = (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, jwtSecret);
-    req.user = { id: payload.sub, email: payload.email };
+    req.user = { id: payload.sub, email: payload.email, role: payload.role || 'user' };
     next();
   } catch (error) {
     res.status(401).json({ ok: false, message: 'Invalid or expired token' });
   }
 };
 
+const requireAdmin = (req, res, next) => {
+  if (req.user?.role !== 'admin') {
+    res.status(403).json({ ok: false, message: 'Admin access required' });
+    return;
+  }
+  next();
+};
+
 module.exports = {
   authenticate,
+  requireAdmin,
 };
