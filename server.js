@@ -33,7 +33,7 @@ app.use(
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
         'script-src': ["'self'", 'https://s3.tradingview.com'],
         'connect-src': ["'self'", 'https://api.frankfurter.dev'],
-        'img-src': ["'self'", 'data:', 'https://cdn.simpleicons.org'],
+        'img-src': ["'self'", 'data:'],
       },
     },
   })

@@ -651,12 +651,11 @@ textarea {
 }
 
 .method-logo-image {
-  width: 34px;
+  width: 58px;
   height: 34px;
-  object-fit: contain;
-  border-radius: 9px;
+  object-fit: cover;
+  border-radius: 8px;
   background: #fff;
-  padding: 5px;
 }
 
 .manual-deposit-steps {
