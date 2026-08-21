@@ -14,6 +14,19 @@ const providerError = (message) => {
   return error;
 };
 
+const logAzamPayError = (operation, error) => {
+  const details = {
+    operation,
+    message: error?.message || 'Unknown Axios error',
+    code: error?.code || null,
+    status: error?.response?.status || null,
+    statusText: error?.response?.statusText || null,
+    responseData: error?.response?.data || null,
+  };
+
+  console.error('[AzamPay] API request failed:', details);
+};
+
 const getBaseUrl = () =>
   process.env.AZAMPAY_ENV === 'sandbox' ? BASE_URLS.sandbox : BASE_URLS.live;
 
@@ -34,6 +47,7 @@ const getToken = async () => {
       { timeout: 10_000 }
     ));
   } catch (error) {
+    logAzamPayError('GenerateToken', error);
     throw providerError('Mobile money provider authentication failed. Check AzamPay credentials and environment.');
   }
 
@@ -88,6 +102,7 @@ const checkout = async ({ phone, amountUsd, channel, externalId }) => {
       }
     ));
   } catch (error) {
+    logAzamPayError('MobileCheckout', error);
     throw providerError('Mobile money deposit could not reach AzamPay. Verify the phone number, credentials, and provider environment.');
   }
 
@@ -129,6 +144,7 @@ const disburse = async ({ phone, amountUsd, channel, externalId }) => {
       }
     ));
   } catch (error) {
+    logAzamPayError('MobileDisburse', error);
     throw providerError('Mobile money withdrawal could not reach AzamPay. Verify the phone number, credentials, and provider environment.');
   }
 
