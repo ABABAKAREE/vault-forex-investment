@@ -214,6 +214,10 @@ textarea {
   font-weight: 700;
 }
 
+.bottom-nav a {
+  flex: 1 1 25%;
+}
+
 .bottom-nav a svg {
   width: 20px;
   height: 20px;

@@ -77,7 +77,6 @@ const initializeBottomNavigation = () => {
     nav.innerHTML = `
       <a href="home.html" class="${currentPage === 'home.html' ? 'active' : ''}"><span class="nav-icon">⌂</span><span>Home</span></a>
       <a href="plans.html" class="${currentPage === 'plans.html' ? 'active' : ''}"><span class="nav-icon">▦</span><span>Marketplace</span></a>
-      <a href="plans.html#computing"><span class="nav-icon">▣</span><span>Computing</span></a>
       <a href="community.html" class="${currentPage === 'community.html' ? 'active' : ''}"><span class="nav-icon">◎</span><span>Community</span></a>
       <a href="my-account.html" class="${currentPage === 'my-account.html' ? 'active' : ''}"><span class="nav-icon">◉</span><span>Mine</span></a>
     `;
