@@ -1279,12 +1279,36 @@ function initializeTradingViewWidgets() {
       priceNode.textContent = formatPrice(price, to);
       priceNode.classList.remove('bearish', 'neutral');
       priceNode.classList.add('bullish');
+      const missionRate = document.querySelector('[data-mission-rate]');
+      if (missionRate) {
+        missionRate.textContent = formatPrice(price, to);
+      }
     } catch (_error) {
       priceNode.textContent = 'Unavailable';
       priceNode.classList.remove('bullish', 'bearish');
       priceNode.classList.add('neutral');
     }
   };
+
+  const missionChartHost = document.querySelector('.mission-chart-host');
+  if (missionChartHost && typeof TradingView !== 'undefined') {
+    missionChartHost.id = 'tv-mission-eurusd';
+    new TradingView.widget({
+      autosize: true,
+      symbol: 'FX:EURUSD',
+      interval: '30',
+      timezone: 'Etc/UTC',
+      theme: 'dark',
+      style: '1',
+      locale: 'en',
+      hide_top_toolbar: true,
+      hide_legend: true,
+      withdateranges: false,
+      allow_symbol_change: false,
+      save_image: false,
+      container_id: 'tv-mission-eurusd',
+    });
+  }
 
   cards.forEach((card, index) => {
     window.setTimeout(() => fetchPairData(card), index * 250);
