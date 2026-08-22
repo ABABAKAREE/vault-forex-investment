@@ -1009,117 +1009,6 @@ textarea {
   padding: 18px;
 }
 
-.mission-slide {
-  display: grid;
-  grid-template-columns: minmax(150px, 0.75fr) minmax(250px, 1.3fr) minmax(180px, 0.9fr);
-  gap: 18px;
-  align-items: center;
-  min-height: 340px;
-  background: radial-gradient(circle at 52% 45%, rgba(0, 210, 255, 0.15), transparent 28%), linear-gradient(135deg, #0b1020, #101a30 58%, #0b1120);
-}
-
-.mission-kicker {
-  margin: 0 0 8px;
-  color: #f0c96b;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-}
-
-.mission-benefits h3,
-.mission-welcome h3 {
-  margin: 0;
-  font-size: clamp(1.45rem, 3vw, 2.3rem);
-  line-height: 1.05;
-}
-
-.mission-benefit-list {
-  display: grid;
-  gap: 12px;
-  margin-top: 22px;
-}
-
-.mission-benefit {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: #f5f7fb;
-  font-size: 0.78rem;
-  line-height: 1.15;
-}
-
-.mission-icon {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border: 1px solid #f0c96b;
-  border-radius: 50%;
-  color: #f0c96b;
-  font-size: 1.05rem;
-}
-
-.mission-market-card {
-  min-width: 0;
-  padding: 10px;
-  border: 1px solid rgba(114, 203, 255, 0.5);
-  border-radius: 16px;
-  background: rgba(7, 13, 25, 0.82);
-  box-shadow: 0 0 28px rgba(0, 210, 255, 0.14);
-}
-
-.mission-market-head,
-.mission-market-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  color: var(--vault-muted);
-  font-size: 0.66rem;
-  font-weight: 700;
-}
-
-.mission-market-head span:first-child {
-  color: #e8f4ff;
-}
-
-.mission-chart-host {
-  width: 100%;
-  height: 190px;
-  margin: 8px 0;
-  overflow: hidden;
-  border-radius: 10px;
-  background: #0b101b;
-}
-
-.mission-market-footer strong {
-  color: #55e1a7;
-}
-
-.mission-welcome p:not(.mission-kicker) {
-  margin: 14px 0 20px;
-  color: #d5ddec;
-  font-size: 0.86rem;
-  line-height: 1.45;
-}
-
-.mission-welcome em {
-  color: #f0c96b;
-  font-style: normal;
-}
-
-.mission-stat-row {
-  display: grid;
-  gap: 4px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--vault-muted);
-  font-size: 0.72rem;
-}
-
-.mission-stat-row strong {
-  color: #55e1a7;
-}
-
 .compact-slide {
   min-height: 0;
   max-height: 340px;
@@ -1304,26 +1193,6 @@ textarea {
 }
 
 @media (max-width: 768px) {
-  .mission-slide {
-    grid-template-columns: 1fr 1.25fr;
-    gap: 12px;
-    min-height: 300px;
-  }
-
-  .mission-welcome {
-    grid-column: 1 / -1;
-    padding-top: 4px;
-  }
-
-  .mission-benefit-list {
-    gap: 8px;
-    margin-top: 14px;
-  }
-
-  .mission-chart-host {
-    height: 155px;
-  }
-
   .promo-slide-inner {
     min-height: 0;
     grid-template-columns: 1fr;
@@ -2209,36 +2078,6 @@ textarea {
 
   .compact-slide {
     padding: 12px;
-  }
-
-  .mission-slide {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 14px;
-  }
-
-  .mission-benefit-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .mission-benefit {
-    display: grid;
-    justify-items: center;
-    gap: 5px;
-    text-align: center;
-    font-size: 0.64rem;
-  }
-
-  .mission-market-card {
-    order: 2;
-  }
-
-  .mission-welcome {
-    order: 3;
-  }
-
-  .mission-chart-host {
-    height: 135px;
   }
 
   .pair-tile {
