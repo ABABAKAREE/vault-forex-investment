@@ -24,9 +24,19 @@ router.get('/summary', authenticate, async (req, res, next) => {
       ),
     ]);
 
+    const deposits = await pool.query(
+      `SELECT id, network_selected, amount_usd, transaction_id, status, created_at, reviewed_at
+       FROM manual_deposits
+       WHERE user_id = $1
+       ORDER BY created_at DESC
+       LIMIT 20`,
+      [req.user.id]
+    );
+
     const balance = Number(account.rows[0]?.balance_usd || 0);
     const recentActivities = activities.rows.map((row) => ({
       title: `${row.tx_type.toUpperCase()} $${Number(row.amount_usd).toFixed(2)}`,
+      amount: Number(row.amount_usd),
       status: row.status,
       createdAt: row.created_at,
     }));
@@ -47,6 +57,7 @@ router.get('/summary', authenticate, async (req, res, next) => {
       ok: true,
       balance,
       recentActivities,
+      manualDeposits: deposits.rows,
       vaults: activeVaults,
     });
   } catch (error) {

@@ -202,6 +202,8 @@ const transactionModalTitle = document.getElementById('transaction-modal-title')
 const transactionModalKicker = document.getElementById('transaction-modal-kicker');
 const walletBalanceNode = document.getElementById('wallet-balance');
 const recentActivityList = document.getElementById('recent-activity-list');
+const manualDepositHistory = document.getElementById('manual-deposit-history');
+const transactionHistory = document.getElementById('transaction-history');
 
 const transactionState = {
   type: 'deposit',
@@ -223,6 +225,7 @@ const getStoredBalance = () => {
 const portfolioState = {
   balance: getStoredBalance(),
   recentActivities: [],
+  manualDeposits: [],
   vaults: {},
 };
 
@@ -333,6 +336,40 @@ const renderRecentActivity = () => {
   });
 };
 
+const getHistoryStatusClass = (status) => {
+  const normalized = String(status || '').toLowerCase();
+  return normalized === 'pending' ? 'pending' : normalized === 'completed' || normalized === 'approved' ? 'success' : 'review';
+};
+
+const renderAccountHistory = () => {
+  const renderEmpty = (node, message) => {
+    if (node) node.innerHTML = `<tr><td colspan="4" class="history-empty">${message}</td></tr>`;
+  };
+  const formatDate = (value) => new Date(value).toLocaleDateString();
+
+  if (manualDepositHistory) {
+    if (!portfolioState.manualDeposits.length) {
+      renderEmpty(manualDepositHistory, 'No manual deposits yet.');
+    } else {
+      manualDepositHistory.innerHTML = portfolioState.manualDeposits.map((deposit) => `
+        <tr><td>${formatDate(deposit.created_at)}</td><td>${deposit.network_selected}</td><td>${formatUsd(deposit.amount_usd)}</td>
+        <td><span class="status ${getHistoryStatusClass(deposit.status)}">${deposit.status}</span></td></tr>
+      `).join('');
+    }
+  }
+
+  if (transactionHistory) {
+    if (!portfolioState.recentActivities.length) {
+      renderEmpty(transactionHistory, 'No transactions yet.');
+    } else {
+      transactionHistory.innerHTML = portfolioState.recentActivities.map((entry) => `
+        <tr><td>${formatDate(entry.createdAt)}</td><td>${entry.title}</td><td>${entry.amount ? formatUsd(entry.amount) : '-'}</td>
+        <td><span class="status ${getHistoryStatusClass(entry.status)}">${entry.status}</span></td></tr>
+      `).join('');
+    }
+  }
+};
+
 const renderHomeActiveTiers = () => {
   const activeTierList = document.getElementById('active-tier-list');
   if (!activeTierList) {
@@ -385,6 +422,7 @@ const initializeReferralBox = () => {
 const refreshDashboardUi = () => {
   renderWalletBalance();
   renderRecentActivity();
+  renderAccountHistory();
   renderVaultCards();
   renderVaultActivationState();
   initializeVaultPayoutDates();
@@ -459,6 +497,19 @@ const hydratePortfolioFromApi = async () => {
   savedVaults.forEach((vaultId) => {
     setVaultActive(vaultId, true);
   });
+
+  const token = getAuthToken();
+  if (token) {
+    const result = await apiRequest('/api/account/summary', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (result?.ok) {
+      portfolioState.balance = Number(result.balance || 0);
+      portfolioState.recentActivities = Array.isArray(result.recentActivities) ? result.recentActivities : [];
+      portfolioState.manualDeposits = Array.isArray(result.manualDeposits) ? result.manualDeposits : [];
+      persistBalance();
+    }
+  }
 
   refreshDashboardUi();
 };
@@ -840,7 +891,7 @@ transactionForm?.addEventListener('submit', async (event) => {
       if (result.ok) {
         submittedForm.reset();
         closeForm();
-        prependActivity(`Manual deposit $${amount.toFixed(2)}`, 'Pending');
+        await hydratePortfolioFromApi();
         alert('Deposit submitted. It is pending admin verification.');
       } else {
         alert(result.message || 'Could not submit manual deposit.');

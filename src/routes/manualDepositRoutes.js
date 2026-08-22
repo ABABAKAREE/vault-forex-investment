@@ -39,13 +39,29 @@ router.post('/', authenticate, upload.single('receipt'), async (req, res, next) 
 
   try {
     const receiptImageUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
-    const result = await pool.query(
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      const result = await client.query(
       `INSERT INTO manual_deposits (user_id, network_selected, amount_usd, transaction_id, receipt_image_url)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id, status, created_at`,
       [req.user.id, network, amount, transactionId, receiptImageUrl]
-    );
-    res.status(201).json({ ok: true, deposit: result.rows[0], message: 'Deposit submitted for admin verification.' });
+      );
+      const deposit = result.rows[0];
+      await client.query(
+        `INSERT INTO transactions (user_id, tx_type, channel, amount_usd, status, external_reference, metadata)
+         VALUES ($1, 'deposit', 'manual', $2, 'pending', $3, $4)`,
+        [req.user.id, amount, String(deposit.id), JSON.stringify({ manualDepositId: deposit.id, transactionId })]
+      );
+      await client.query('COMMIT');
+      res.status(201).json({ ok: true, deposit, message: 'Deposit submitted for admin verification.' });
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
   } catch (error) {
     if (String(error?.message || '').includes('manual_deposits_network_transaction_idx')) {
       res.status(409).json({ ok: false, message: 'This transaction ID has already been submitted.' });
@@ -97,9 +113,17 @@ router.patch('/:id/review', authenticate, requireAdmin, async (req, res, next) =
     if (decision === 'approved') {
       await client.query('UPDATE accounts SET balance_usd = balance_usd + $1 WHERE user_id = $2', [deposit.amount_usd, deposit.user_id]);
       await client.query(
-        `INSERT INTO transactions (user_id, tx_type, channel, amount_usd, status, external_reference, metadata)
-         VALUES ($1, 'deposit', 'manual', $2, 'completed', $3, $4)`,
-        [deposit.user_id, deposit.amount_usd, String(deposit.id), JSON.stringify({ manualDepositId: deposit.id })]
+        `UPDATE transactions
+         SET status = 'completed', updated_at = NOW(), metadata = metadata || $1::jsonb
+         WHERE external_reference = $2 AND user_id = $3 AND tx_type = 'deposit'`,
+        [JSON.stringify({ manualDepositId: deposit.id, approved: true }), String(deposit.id), deposit.user_id]
+      );
+    } else {
+      await client.query(
+        `UPDATE transactions
+         SET status = 'failed', updated_at = NOW(), metadata = metadata || $1::jsonb
+         WHERE external_reference = $2 AND user_id = $3 AND tx_type = 'deposit'`,
+        [JSON.stringify({ manualDepositId: deposit.id, rejected: true }), String(deposit.id), deposit.user_id]
       );
     }
     await client.query('COMMIT');

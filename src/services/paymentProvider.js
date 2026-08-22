@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const paymentWebhookSecret = '';
+const { paymentWebhookSecret } = require('../config/env');
 
 const buildReference = (prefix) => `${prefix}-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 

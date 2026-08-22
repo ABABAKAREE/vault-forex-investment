@@ -39,7 +39,7 @@ const envMap = parseEnv(fs.readFileSync(envPath, 'utf8'));
 Object.entries(process.env).forEach(([key, value]) => {
   if (value) envMap.set(key, value);
 });
-const required = ['DATABASE_URL', 'JWT_SECRET', 'APP_ORIGIN'];
+const required = ['DATABASE_URL', 'JWT_SECRET'];
 required.forEach((key) => {
   const val = envMap.get(key);
   if (!val) {
@@ -52,6 +52,14 @@ const jwtSecret = envMap.get('JWT_SECRET') || '';
 if (jwtSecret.includes('change-this') || jwtSecret.length < 16) {
   hasFailure = true;
   fail('JWT_SECRET looks weak/default. Use a long random secret (16+ chars).');
+}
+
+const appOrigin = envMap.get('APP_ORIGIN')
+  || (envMap.get('RAILWAY_PUBLIC_DOMAIN') && `https://${envMap.get('RAILWAY_PUBLIC_DOMAIN')}`)
+  || envMap.get('RAILWAY_STATIC_URL');
+if (envMap.get('NODE_ENV') === 'production' && !appOrigin) {
+  hasFailure = true;
+  fail('Set APP_ORIGIN to the public HTTPS URL of the deployed app.');
 }
 
 const networks = ['MANUAL_MPESA_PHONE', 'MANUAL_TIGO_PHONE', 'MANUAL_AIRTEL_PHONE', 'MANUAL_HALOPESA_PHONE'];
