@@ -572,6 +572,330 @@ textarea {
   background: #0f1421;
 }
 
+/* Professional fintech surface system */
+:root {
+  --vault-bg: #080d16;
+  --vault-surface: #101824;
+  --vault-primary: #2ed6c1;
+  --vault-gold: #e6b85c;
+  --vault-text: #f7f9fc;
+  --vault-muted: #91a0b5;
+  --vault-border: #253246;
+  --vault-elevated: #151f2e;
+  --vault-success: #55d89f;
+}
+
+body {
+  font-family: Manrope, ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0;
+}
+
+h1,
+h2,
+h3,
+.topbar-kicker,
+.section-kicker,
+.wallet-label,
+.panel-title {
+  font-family: "Space Grotesk", Manrope, ui-sans-serif, sans-serif;
+}
+
+.vault-body {
+  background:
+    linear-gradient(145deg, rgba(20, 37, 58, 0.45), transparent 35%),
+    radial-gradient(900px 420px at 90% -10%, rgba(46, 214, 193, 0.1), transparent 65%),
+    radial-gradient(800px 400px at 0 80%, rgba(230, 184, 92, 0.08), transparent 65%),
+    var(--vault-bg);
+}
+
+.main-area {
+  gap: 18px;
+  padding-top: 26px;
+}
+
+.panel,
+.home-actions {
+  border-color: rgba(137, 161, 193, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.16);
+}
+
+.hero-banner,
+.total-balance-widget,
+.topbar {
+  background: linear-gradient(135deg, rgba(25, 44, 67, 0.94), rgba(13, 21, 33, 0.98));
+}
+
+.hero-banner {
+  min-height: 178px;
+  padding: 28px;
+  border-color: rgba(46, 214, 193, 0.28);
+}
+
+.hero-banner h1 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: 0;
+}
+
+.hero-kicker,
+.section-kicker,
+.wallet-label,
+.topbar-kicker {
+  color: var(--vault-gold);
+}
+
+.dashboard-grid {
+  grid-template-columns: 1.15fr 0.85fr;
+}
+
+.total-balance-value {
+  color: var(--vault-text);
+  font-family: "Space Grotesk", Manrope, sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.wallet-card {
+  align-content: center;
+  background: linear-gradient(160deg, rgba(20, 31, 47, 0.98), rgba(12, 19, 30, 0.98));
+}
+
+.wallet-amount {
+  color: var(--vault-primary);
+  font-family: "Space Grotesk", Manrope, sans-serif;
+}
+
+.home-actions {
+  gap: 14px;
+  padding: 18px;
+  background: rgba(16, 24, 36, 0.78);
+}
+
+.dashboard-actions {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dashboard-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 13px 12px;
+  border: 1px solid rgba(137, 161, 193, 0.18);
+  border-radius: 10px;
+  background: rgba(16, 24, 36, 0.88);
+  color: var(--vault-text);
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.dashboard-action:hover {
+  transform: translateY(-2px);
+  border-color: rgba(46, 214, 193, 0.65);
+  background: rgba(25, 42, 57, 0.95);
+}
+
+.dashboard-action-icon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  color: #07131b;
+  background: var(--vault-primary);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.withdraw-icon,
+.support-icon {
+  color: #201709;
+  background: var(--vault-gold);
+}
+
+.history-icon,
+.team-icon {
+  color: #061b1c;
+  background: #72e0d0;
+}
+
+.dashboard-action strong,
+.dashboard-action small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-action strong {
+  font-size: 0.78rem;
+}
+
+.dashboard-action small {
+  margin-top: 2px;
+  color: var(--vault-muted);
+  font-size: 0.65rem;
+}
+
+.section-head h2 {
+  font-family: "Space Grotesk", Manrope, sans-serif;
+  letter-spacing: 0;
+}
+
+.section-badge,
+.method-pill,
+.promo-badge {
+  border: 1px solid rgba(230, 184, 92, 0.28);
+}
+
+.section-badge {
+  background: rgba(46, 214, 193, 0.12);
+  color: var(--vault-primary);
+}
+
+.market-panel {
+  background: linear-gradient(180deg, rgba(16, 24, 36, 0.92), rgba(11, 17, 27, 0.96));
+}
+
+.pair-tile,
+.payment-method-card,
+.stat-card,
+.vault-tier,
+.setting-row,
+.team-card {
+  background: var(--vault-elevated);
+  border-color: rgba(137, 161, 193, 0.2);
+}
+
+.pair-tile:hover,
+.payment-method-card:hover,
+.vault-tier:hover {
+  border-color: rgba(46, 214, 193, 0.56);
+}
+
+.pair-name,
+.pair-price,
+.vault-card h3,
+.vault-tier h2 {
+  font-family: "Space Grotesk", Manrope, sans-serif;
+}
+
+.pair-price.bullish,
+.vault-row span:last-child,
+.vault-activation.active {
+  color: var(--vault-success);
+}
+
+.vault-grid,
+.vault-catalog {
+  gap: 14px;
+}
+
+.vault-card,
+.vault-tier {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, rgba(37, 45, 49, 0.96), rgba(15, 23, 34, 0.98));
+}
+
+.vault-card::before,
+.vault-tier::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  content: "";
+  background: linear-gradient(90deg, var(--vault-gold), var(--vault-primary));
+}
+
+.vault-card h3,
+.vault-tier h2 {
+  color: var(--vault-text);
+}
+
+.vault-btn,
+.primary-btn {
+  background: var(--vault-primary);
+  color: #06191b;
+  box-shadow: 0 8px 20px rgba(46, 214, 193, 0.16);
+}
+
+.vault-btn:hover,
+.primary-btn:hover {
+  filter: brightness(1.08);
+}
+
+.field-group input,
+.field-group select,
+.auth-feedback,
+.transaction-note,
+.crypto-address-box,
+.vault-confirm-summary {
+  border-color: rgba(137, 161, 193, 0.24);
+  background: #0c1420;
+}
+
+.setting-row {
+  border-radius: 10px;
+}
+
+.settings-panel,
+.account-panel,
+.admin-area .topbar {
+  background: linear-gradient(145deg, rgba(20, 31, 47, 0.98), rgba(12, 19, 30, 0.98));
+}
+
+.bottom-nav {
+  background: rgba(8, 13, 22, 0.94);
+  border-color: rgba(137, 161, 193, 0.2);
+}
+
+@media (max-width: 920px) {
+  .dashboard-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .main-area {
+    gap: 12px;
+    padding-top: 14px;
+  }
+
+  .hero-banner {
+    min-height: 0;
+    padding: 18px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dashboard-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-action {
+    padding: 10px;
+  }
+
+  .dashboard-action-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .dashboard-action small {
+    display: none;
+  }
+
+  .home-actions {
+    padding: 14px;
+  }
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;

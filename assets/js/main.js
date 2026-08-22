@@ -601,7 +601,8 @@ const closeModalButtons = document.querySelectorAll('[data-close-modal]');
 const continueTransactionButton = document.getElementById('continue-transaction');
 
 transactionButtons.forEach((button) => {
-  button.addEventListener('click', () => {
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
     const action = button.dataset.transactionAction || 'deposit';
     openTransactionModal(action);
   });
