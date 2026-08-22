@@ -789,9 +789,12 @@ closeFormModalButtons.forEach((button) => {
 transactionForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
 
+  const submittedForm = event.currentTarget;
+  const submittedReferenceInput = submittedForm.elements.namedItem('transaction-reference-input');
+  const submittedReceiptInput = submittedForm.elements.namedItem('receipt-input');
   const amount = Number(transactionAmountInput?.value || 0);
   const accountValue = transactionAccountInput?.value.trim();
-  const referenceValue = transactionReferenceInput?.value.trim();
+  const referenceValue = submittedReferenceInput?.value.trim() || '';
   const method = transactionState.method;
   const isCrypto = method === 'usdt' || method === 'btc';
   const isBank = method === 'bank';
@@ -812,25 +815,40 @@ transactionForm?.addEventListener('submit', async (event) => {
 
   if (transactionState.type === 'deposit' && !isCrypto && !isBank) {
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
-    if (!token || !transactionReferenceInput?.value.trim() || !receiptInput?.files?.[0]) {
+    const receiptFile = submittedReceiptInput?.files?.[0];
+    if (!token || !referenceValue || !receiptFile) {
       alert('Transaction ID and a receipt image are required.');
       return;
     }
     const formData = new FormData();
     formData.append('networkSelected', method);
     formData.append('amount', String(amount));
-    formData.append('transactionId', transactionReferenceInput.value.trim());
-    formData.append('receipt', receiptInput.files[0]);
-    const result = await fetch(`${API_BASE_URL}/api/manual-deposits`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    }).then(async (response) => ({ ok: response.ok, ...(await response.json().catch(() => ({}))) }));
-    if (result.ok) {
-      closeForm();
-      alert('Deposit submitted. It is pending admin verification.');
-    } else {
-      alert(result.message || 'Could not submit manual deposit.');
+    formData.append('transactionId', referenceValue);
+    formData.append('receipt', receiptFile, receiptFile.name);
+    const submitButton = submittedForm.querySelector('#submit-transaction');
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitting...';
+    }
+    try {
+      const result = await fetch(`${API_BASE_URL}/api/manual-deposits`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      }).then(async (response) => ({ ok: response.ok, ...(await response.json().catch(() => ({}))) }));
+      if (result.ok) {
+        submittedForm.reset();
+        closeForm();
+        prependActivity(`Manual deposit $${amount.toFixed(2)}`, 'Pending');
+        alert('Deposit submitted. It is pending admin verification.');
+      } else {
+        alert(result.message || 'Could not submit manual deposit.');
+      }
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit';
+      }
     }
     return;
   }
