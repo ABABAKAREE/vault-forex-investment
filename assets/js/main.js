@@ -1224,23 +1224,14 @@ function initializeTradingViewWidgets() {
       return;
     }
 
-    const min = Math.min(...validValues);
-    const max = Math.max(...validValues);
-    const range = max - min || max * 0.001 || 1;
-    const points = validValues
-      .map((value, index) => {
-        const x = 4 + (index / (validValues.length - 1)) * 212;
-        const y = 82 - ((value - min) / range) * 68;
-        return `${x.toFixed(1)},${y.toFixed(1)}`;
-      })
-      .join(' ');
-
+    const ticker = card.dataset.marketTicker;
+    const strategyImage = ticker === 'USDJPY' || ticker === 'AUDUSD'
+      ? 'chart-breakout.svg'
+      : ticker === 'USDCAD'
+        ? 'chart-reversal.svg'
+        : 'chart-trend.svg';
     widgetHost.innerHTML = `
-      <div class="chart-fallback" aria-label="${card.dataset.marketTicker} recent rate chart">
-        <svg viewBox="0 0 220 90" role="img">
-          <polyline points="${points}"></polyline>
-        </svg>
-      </div>
+      <img class="pair-strategy-chart" src="assets/images/${strategyImage}" alt="${ticker} ${strategyImage.replace('chart-', '').replace('.svg', '')} strategy chart" />
     `;
   };
 
