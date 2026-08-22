@@ -1217,22 +1217,30 @@ function initializeTradingViewWidgets() {
   const formatDate = (date) => date.toISOString().slice(0, 10);
   const formatPrice = (price, quote) => quote === 'JPY' ? price.toFixed(3) : price.toFixed(5);
 
-  const renderPairChart = (card, values) => {
+  const renderPairChart = (card) => {
     const widgetHost = card.querySelector('[data-tv-widget]');
-    const validValues = values.filter((value) => Number.isFinite(value));
-    if (!widgetHost || validValues.length < 2) {
+    const symbol = card.dataset.marketSymbol;
+    if (!widgetHost || !symbol || typeof TradingView === 'undefined') {
       return;
     }
 
-    const ticker = card.dataset.marketTicker;
-    const strategyImage = ticker === 'USDJPY' || ticker === 'AUDUSD'
-      ? 'chart-breakout.svg'
-      : ticker === 'USDCAD'
-        ? 'chart-reversal.svg'
-        : 'chart-trend.svg';
-    widgetHost.innerHTML = `
-      <img class="pair-strategy-chart" src="assets/images/${strategyImage}" alt="${ticker} ${strategyImage.replace('chart-', '').replace('.svg', '')} strategy chart" />
-    `;
+    const hostId = `tv-${symbol.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+    widgetHost.id = hostId;
+    new TradingView.widget({
+      autosize: true,
+      symbol,
+      interval: '30',
+      timezone: 'Etc/UTC',
+      theme: 'dark',
+      style: '1',
+      locale: 'en',
+      hide_top_toolbar: true,
+      hide_legend: true,
+      withdateranges: false,
+      allow_symbol_change: false,
+      save_image: false,
+      container_id: hostId,
+    });
   };
 
   const fetchPairData = async (card) => {
@@ -1244,6 +1252,7 @@ function initializeTradingViewWidgets() {
 
     const from = ticker.slice(0, 3);
     const to = ticker.slice(3, 6);
+    renderPairChart(card);
 
     const endDate = new Date();
     const startDate = new Date(endDate);
@@ -1270,7 +1279,6 @@ function initializeTradingViewWidgets() {
       priceNode.textContent = formatPrice(price, to);
       priceNode.classList.remove('bearish', 'neutral');
       priceNode.classList.add('bullish');
-      renderPairChart(card, values);
     } catch (_error) {
       priceNode.textContent = 'Unavailable';
       priceNode.classList.remove('bullish', 'bearish');
