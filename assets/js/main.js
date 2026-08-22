@@ -85,6 +85,29 @@ const initializeBottomNavigation = () => {
 
 initializeBottomNavigation();
 
+const hydrateProfile = () => {
+  let user = {};
+  try {
+    user = JSON.parse(localStorage.getItem(AUTH_USER_KEY) || '{}');
+  } catch (_error) {
+    user = {};
+  }
+
+  const fields = {
+    'profile-full-name': user.full_name || user.name || '',
+    'profile-email': user.email || '',
+    'profile-phone': user.phone || '',
+    'profile-account-id': user.id || '',
+    'profile-created-at': user.created_at ? new Date(user.created_at).toLocaleDateString() : '',
+  };
+  Object.entries(fields).forEach(([id, value]) => {
+    const field = document.getElementById(id);
+    if (field) field.value = value;
+  });
+};
+
+hydrateProfile();
+
 if (window.location.protocol === 'file:') {
   const redirectUrl = currentPage === 'index.html' ? STATIC_SERVER : `${STATIC_SERVER}/${currentPage}`;
   fetch(`${STATIC_SERVER}/api/health`, { method: 'HEAD', mode: 'cors' })
