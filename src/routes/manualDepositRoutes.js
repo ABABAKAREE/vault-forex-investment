@@ -30,7 +30,7 @@ router.get('/networks', authenticate, (_req, res) => {
 router.post('/', authenticate, upload.single('receipt'), async (req, res, next) => {
   const network = String(req.body?.networkSelected || '').toLowerCase();
   const amount = Number(req.body?.amount);
-  const transactionId = String(req.body?.transactionId || '').trim();
+  const transactionId = String(req.body?.transactionId || `PENDING-${Date.now()}`).trim();
 
   if (!paymentNetworks[network] || !Number.isFinite(amount) || amount <= 0 || !transactionId || !req.file) {
     res.status(400).json({ ok: false, message: 'Network, amount, transaction ID, and receipt image are required.' });

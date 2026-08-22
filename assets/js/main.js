@@ -816,14 +816,15 @@ transactionForm?.addEventListener('submit', async (event) => {
   if (transactionState.type === 'deposit' && !isCrypto && !isBank) {
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
     const receiptFile = submittedReceiptInput?.files?.[0];
-    if (!token || !referenceValue || !receiptFile) {
-      alert('Transaction ID and a receipt image are required.');
+    if (!token || !receiptFile) {
+      alert(!token ? 'Please sign in again before submitting a deposit.' : 'Please select a receipt image before submitting.');
       return;
     }
+    const transactionId = referenceValue || `PENDING-${Date.now()}`;
     const formData = new FormData();
     formData.append('networkSelected', method);
     formData.append('amount', String(amount));
-    formData.append('transactionId', referenceValue);
+    formData.append('transactionId', transactionId);
     formData.append('receipt', receiptFile, receiptFile.name);
     const submitButton = submittedForm.querySelector('#submit-transaction');
     if (submitButton) {
