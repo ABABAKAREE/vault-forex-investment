@@ -66,11 +66,25 @@ const clearAuthSession = () => {
 };
 
 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-const protectedPages = ['home.html', 'dashboard.html', 'plans.html', 'my-account.html', 'settings.html'];
+const protectedPages = ['home.html', 'dashboard.html', 'plans.html', 'my-account.html', 'settings.html', 'community.html'];
 const STATIC_SERVER = 'http://localhost:3000';
 const API_BASE_URL = window.location.protocol === 'file:'
   ? STATIC_SERVER
   : window.location.origin;
+
+const initializeBottomNavigation = () => {
+  document.querySelectorAll('.bottom-nav').forEach((nav) => {
+    nav.innerHTML = `
+      <a href="home.html" class="${currentPage === 'home.html' ? 'active' : ''}"><span class="nav-icon">⌂</span><span>Home</span></a>
+      <a href="plans.html" class="${currentPage === 'plans.html' ? 'active' : ''}"><span class="nav-icon">▦</span><span>Marketplace</span></a>
+      <a href="plans.html#computing"><span class="nav-icon">▣</span><span>Computing</span></a>
+      <a href="community.html" class="${currentPage === 'community.html' ? 'active' : ''}"><span class="nav-icon">◎</span><span>Community</span></a>
+      <a href="my-account.html" class="${currentPage === 'my-account.html' ? 'active' : ''}"><span class="nav-icon">◉</span><span>Mine</span></a>
+    `;
+  });
+};
+
+initializeBottomNavigation();
 
 if (window.location.protocol === 'file:') {
   const redirectUrl = currentPage === 'index.html' ? STATIC_SERVER : `${STATIC_SERVER}/${currentPage}`;
