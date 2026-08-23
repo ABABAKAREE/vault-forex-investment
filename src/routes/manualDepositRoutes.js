@@ -85,6 +85,28 @@ router.get('/pending', authenticate, requireAdmin, async (_req, res, next) => {
   }
 });
 
+router.get('/all', authenticate, requireAdmin, async (req, res, next) => {
+  const status = String(req.query.status || '').toLowerCase();
+  if (status && !['pending', 'approved', 'rejected'].includes(status)) {
+    res.status(400).json({ ok: false, message: 'Invalid deposit status filter.' });
+    return;
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT md.id, md.network_selected, md.amount_usd, md.transaction_id, md.receipt_image_url,
+              md.status, md.created_at, md.reviewed_at, u.email, u.full_name
+       FROM manual_deposits md JOIN users u ON u.id = md.user_id
+       WHERE ($1 = '' OR md.status = $1)
+       ORDER BY md.created_at DESC`,
+      [status]
+    );
+    res.json({ ok: true, deposits: result.rows });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.patch('/:id/review', authenticate, requireAdmin, async (req, res, next) => {
   const decision = String(req.body?.decision || '').toLowerCase();
   if (!['approved', 'rejected'].includes(decision)) {

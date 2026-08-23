@@ -1,24 +1,14 @@
 const adminToken = localStorage.getItem('vaultAuthToken');
 const adminList = document.getElementById('admin-deposit-list');
+const statusTabs = document.querySelectorAll('[data-status-tab]');
+let activeStatus = 'pending';
 
-const loadPendingDeposits = async () => {
-  if (!adminToken) {
-    adminList.innerHTML = '<div class="panel">Please sign in with an admin account.</div>';
+const renderDeposits = (deposits) => {
+  if (!deposits.length) {
+    adminList.innerHTML = `<div class="panel">No ${activeStatus} deposits.</div>`;
     return;
   }
-  const response = await fetch('/api/manual-deposits/pending', {
-    headers: { Authorization: `Bearer ${adminToken}` },
-  });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    adminList.innerHTML = `<div class="panel">${data.message || 'Unable to load pending deposits.'}</div>`;
-    return;
-  }
-  if (!data.deposits?.length) {
-    adminList.innerHTML = '<div class="panel">No pending deposits.</div>';
-    return;
-  }
-  adminList.innerHTML = data.deposits.map((deposit) => `
+  adminList.innerHTML = deposits.map((deposit) => `
     <article class="panel admin-deposit-card" data-deposit-id="${deposit.id}">
       <div class="admin-deposit-details">
         <p class="section-kicker">${deposit.network_selected}</p>
@@ -26,15 +16,44 @@ const loadPendingDeposits = async () => {
         <p>${deposit.email}</p>
         <p><strong>$${Number(deposit.amount_usd).toFixed(2)}</strong> · Transaction ID: <strong>${deposit.transaction_id}</strong></p>
         <p class="admin-muted">Submitted ${new Date(deposit.created_at).toLocaleString()}</p>
+        ${deposit.reviewed_at ? `<p class="admin-muted">Reviewed ${new Date(deposit.reviewed_at).toLocaleString()}</p>` : ''}
       </div>
       <img class="admin-receipt" src="${deposit.receipt_image_url}" alt="Receipt for ${deposit.transaction_id}" />
-      <div class="admin-deposit-actions">
+      ${deposit.status === 'pending' ? `<div class="admin-deposit-actions">
         <button class="primary-btn" type="button" data-review="approved">Approve</button>
         <button class="secondary-btn" type="button" data-review="rejected">Reject</button>
-      </div>
+      </div>` : ''}
     </article>
   `).join('');
 };
+
+const loadDeposits = async () => {
+  if (!adminToken) {
+    adminList.innerHTML = '<div class="panel">Please sign in with an admin account.</div>';
+    return;
+  }
+  const response = await fetch('/api/manual-deposits/all', {
+    headers: { Authorization: `Bearer ${adminToken}` },
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    adminList.innerHTML = `<div class="panel">${data.message || 'Unable to load pending deposits.'}</div>`;
+    return;
+  }
+  const deposits = data.deposits || [];
+  ['pending', 'approved', 'rejected'].forEach((status) => {
+    const count = deposits.filter((deposit) => deposit.status === status).length;
+    const countNode = document.querySelector(`[data-status-count="${status}"]`);
+    if (countNode) countNode.textContent = count;
+  });
+  renderDeposits(deposits.filter((deposit) => deposit.status === activeStatus));
+};
+
+statusTabs.forEach((tab) => tab.addEventListener('click', () => {
+  activeStatus = tab.dataset.statusTab;
+  statusTabs.forEach((item) => item.classList.toggle('active', item === tab));
+  loadDeposits();
+}));
 
 adminList?.addEventListener('click', async (event) => {
   const button = event.target.closest('[data-review]');
@@ -50,7 +69,7 @@ adminList?.addEventListener('click', async (event) => {
     });
     const data = await response.json().catch(() => ({}));
     if (response.ok) {
-      card.remove();
+      await loadDeposits();
     } else {
       button.disabled = false;
       alert(data.message || 'Deposit review failed.');
@@ -61,4 +80,4 @@ adminList?.addEventListener('click', async (event) => {
   }
 });
 
-loadPendingDeposits();
+loadDeposits();

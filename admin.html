@@ -14,13 +14,18 @@
       <section class="panel topbar">
         <div class="topbar-copy">
           <p class="topbar-kicker">Admin Dashboard</p>
-          <h1>Pending Deposits</h1>
+          <h1>Deposit Review</h1>
           <p>Review transaction IDs and receipt images before crediting wallets.</p>
         </div>
         <a class="pill-link" href="home.html">Back to Home</a>
       </section>
+      <nav class="admin-deposit-tabs" aria-label="Deposit status tabs">
+        <button class="admin-tab active" type="button" data-status-tab="pending">Pending <span data-status-count="pending">0</span></button>
+        <button class="admin-tab" type="button" data-status-tab="approved">Approved <span data-status-count="approved">0</span></button>
+        <button class="admin-tab" type="button" data-status-tab="rejected">Rejected <span data-status-count="rejected">0</span></button>
+      </nav>
       <section class="admin-deposit-list" id="admin-deposit-list" aria-live="polite">
-        <div class="panel">Loading pending deposits...</div>
+        <div class="panel">Loading deposits...</div>
       </section>
     </main>
     <script src="assets/js/admin.js"></script>

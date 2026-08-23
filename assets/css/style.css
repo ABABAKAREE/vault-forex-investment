@@ -1239,6 +1239,41 @@ h3,
   gap: 12px;
 }
 
+.admin-deposit-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0;
+  overflow-x: auto;
+}
+
+.admin-tab {
+  border: 1px solid var(--vault-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: #0f1421;
+  color: var(--vault-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-tab span {
+  display: inline-grid;
+  min-width: 22px;
+  margin-left: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--vault-text);
+}
+
+.admin-tab.active {
+  border-color: rgba(0, 210, 255, 0.5);
+  background: rgba(0, 210, 255, 0.12);
+  color: var(--vault-primary);
+}
+
 .account-history-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
