@@ -107,6 +107,24 @@ router.get('/all', authenticate, requireAdmin, async (req, res, next) => {
   }
 });
 
+router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `DELETE FROM manual_deposits
+       WHERE id = $1 AND status IN ('approved', 'rejected')
+       RETURNING id, status`,
+      [req.params.id]
+    );
+    if (result.rowCount !== 1) {
+      res.status(404).json({ ok: false, message: 'Only approved or rejected deposits can be deleted.' });
+      return;
+    }
+    res.json({ ok: true, deleted: result.rows[0] });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.patch('/:id/review', authenticate, requireAdmin, async (req, res, next) => {
   const decision = String(req.body?.decision || '').toLowerCase();
   if (!['approved', 'rejected'].includes(decision)) {

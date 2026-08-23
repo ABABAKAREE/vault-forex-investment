@@ -22,7 +22,9 @@ const renderDeposits = (deposits) => {
       ${deposit.status === 'pending' ? `<div class="admin-deposit-actions">
         <button class="primary-btn" type="button" data-review="approved">Approve</button>
         <button class="secondary-btn" type="button" data-review="rejected">Reject</button>
-      </div>` : ''}
+      </div>` : `<div class="admin-deposit-actions">
+        <button class="danger-btn" type="button" data-delete>Delete</button>
+      </div>`}
     </article>
   `).join('');
 };
@@ -56,6 +58,31 @@ statusTabs.forEach((tab) => tab.addEventListener('click', () => {
 }));
 
 adminList?.addEventListener('click', async (event) => {
+  const deleteButton = event.target.closest('[data-delete]');
+  const deleteCard = event.target.closest('[data-deposit-id]');
+  if (deleteButton && deleteCard) {
+    if (!window.confirm('Delete this deposit record permanently?')) return;
+    deleteButton.disabled = true;
+    try {
+      const response = await fetch(`/api/manual-deposits/${deleteCard.dataset.depositId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        credentials: 'same-origin',
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        await loadDeposits();
+      } else {
+        deleteButton.disabled = false;
+        alert(data.message || 'Deposit deletion failed.');
+      }
+    } catch (_error) {
+      deleteButton.disabled = false;
+      alert('Could not reach the server. Please try again.');
+    }
+    return;
+  }
+
   const button = event.target.closest('[data-review]');
   const card = event.target.closest('[data-deposit-id]');
   if (!button || !card) return;
