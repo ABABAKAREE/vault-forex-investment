@@ -45,6 +45,7 @@ adminList?.addEventListener('click', async (event) => {
     const response = await fetch(`/api/manual-deposits/${card.dataset.depositId}/review`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+      credentials: 'same-origin',
       body: JSON.stringify({ decision: button.dataset.review }),
     });
     const data = await response.json().catch(() => ({}));

@@ -55,8 +55,8 @@ app.use(
 );
 app.use('/api', apiLimiter);
 app.use('/api/webhooks', webhookRoutes);
-app.use('/api/manual-deposits', manualDepositRoutes);
 app.use(express.json({ limit: '1mb' }));
+app.use('/api/manual-deposits', manualDepositRoutes);
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'vault-api', now: new Date().toISOString() });
