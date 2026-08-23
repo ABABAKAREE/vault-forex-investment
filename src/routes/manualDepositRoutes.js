@@ -106,11 +106,30 @@ router.patch('/:id/review', authenticate, requireAdmin, async (req, res, next) =
       return;
     }
 
-    await client.query(
-      `UPDATE manual_deposits SET status = $1, reviewed_by = $2, reviewed_at = NOW() WHERE id = $3`,
-      [decision, req.user.id, deposit.id]
-    );
     if (decision === 'approved') {
+      const accountResult = await client.query(
+        `SELECT user_id, balance_usd
+         FROM accounts
+         WHERE user_id = $1
+         FOR UPDATE`,
+        [deposit.user_id]
+      );
+      const account = accountResult.rows[0];
+      if (!account) {
+        throw new Error('Account not found for manual deposit approval');
+      }
+
+      const approvedDeposit = await client.query(
+        `UPDATE manual_deposits
+         SET status = 'approved', reviewed_by = $1, reviewed_at = NOW()
+         WHERE id = $2 AND status = 'pending'
+         RETURNING id, status`,
+        [req.user.id, deposit.id]
+      );
+      if (approvedDeposit.rowCount !== 1) {
+        throw new Error('Deposit approval could not be saved');
+      }
+
       const transactionResult = await client.query(
         `SELECT id, status FROM transactions
          WHERE external_reference = $1 AND user_id = $2 AND tx_type = 'deposit'
@@ -119,13 +138,7 @@ router.patch('/:id/review', authenticate, requireAdmin, async (req, res, next) =
       );
       const transaction = transactionResult.rows[0];
       if (transaction?.status === 'pending') {
-        const balanceResult = await client.query(
-          'UPDATE accounts SET balance_usd = balance_usd + $1 WHERE user_id = $2',
-          [deposit.amount_usd, deposit.user_id]
-        );
-        if (balanceResult.rowCount !== 1) {
-          throw new Error('Account not found for manual deposit approval');
-        }
+        await client.query('UPDATE accounts SET balance_usd = balance_usd + $1 WHERE user_id = $2', [deposit.amount_usd, deposit.user_id]);
         await client.query(
           `UPDATE transactions
            SET status = 'completed', updated_at = NOW(), metadata = metadata || $1::jsonb
@@ -133,20 +146,27 @@ router.patch('/:id/review', authenticate, requireAdmin, async (req, res, next) =
           [JSON.stringify({ manualDepositId: deposit.id, approved: true }), transaction.id]
         );
       } else if (!transaction) {
-        const balanceResult = await client.query(
-          'UPDATE accounts SET balance_usd = balance_usd + $1 WHERE user_id = $2',
-          [deposit.amount_usd, deposit.user_id]
-        );
-        if (balanceResult.rowCount !== 1) {
-          throw new Error('Account not found for manual deposit approval');
-        }
+        await client.query('UPDATE accounts SET balance_usd = balance_usd + $1 WHERE user_id = $2', [deposit.amount_usd, deposit.user_id]);
         await client.query(
           `INSERT INTO transactions (user_id, tx_type, channel, amount_usd, status, external_reference, metadata)
            VALUES ($1, 'deposit', 'manual', $2, 'completed', $3, $4)`,
           [deposit.user_id, deposit.amount_usd, String(deposit.id), JSON.stringify({ manualDepositId: deposit.id, approved: true })]
         );
       }
+      const updatedAccount = await client.query(
+        'SELECT balance_usd FROM accounts WHERE user_id = $1',
+        [deposit.user_id]
+      );
+      await client.query('COMMIT');
+      res.json({ ok: true, status: 'approved', balance: Number(updatedAccount.rows[0].balance_usd) });
+      return;
     } else {
+      await client.query(
+        `UPDATE manual_deposits
+         SET status = 'rejected', reviewed_by = $1, reviewed_at = NOW()
+         WHERE id = $2 AND status = 'pending'`,
+        [req.user.id, deposit.id]
+      );
       await client.query(
         `UPDATE transactions
          SET status = 'failed', updated_at = NOW(), metadata = metadata || $1::jsonb
