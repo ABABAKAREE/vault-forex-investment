@@ -2614,7 +2614,21 @@ h3,
 
   .hero-banner {
     display: grid;
-    padding: 16px;
+    min-height: 0;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .hero-copy h1 {
+    margin: 4px 0;
+    font-size: 1.25rem;
+    line-height: 1.1;
+  }
+
+  .hero-copy > p:last-child {
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1.35;
   }
 
   .hero-copy,
@@ -2630,7 +2644,7 @@ h3,
 
   .hero-highlight {
     min-width: 0;
-    padding: 10px;
+    padding: 7px 9px;
     overflow: hidden;
   }
 
@@ -2641,7 +2655,37 @@ h3,
 
   .dashboard-grid .total-balance-widget,
   .dashboard-grid .wallet-card {
-    padding: 12px;
+    min-height: 96px;
+    padding: 10px;
+  }
+
+  .dashboard-grid .total-balance-value {
+    margin: 2px 0;
+    font-size: 1.35rem;
+  }
+
+  .dashboard-grid .total-balance-caption {
+    display: none;
+  }
+
+  .dashboard-grid .wallet-amount {
+    margin: 3px 0 0;
+    font-size: 1.1rem;
+  }
+
+  .dashboard-grid .wallet-actions {
+    gap: 6px;
+    margin-top: 7px;
+  }
+
+  .dashboard-grid .wallet-btn {
+    min-height: 30px;
+    padding: 6px 8px;
+    font-size: 0.68rem;
+  }
+
+  .dashboard-grid .wallet-methods-preview {
+    display: none;
   }
 
   .wallet-methods-preview {
