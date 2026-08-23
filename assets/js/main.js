@@ -1399,6 +1399,11 @@ function initializeMarketCarousel() {
     return;
   }
 
+  const viewport = track.closest('.carousel-window');
+  if (!viewport) {
+    return;
+  }
+
   const slides = track.querySelectorAll('.carousel-slide');
   if (!slides.length) {
     return;
@@ -1422,14 +1427,14 @@ function initializeMarketCarousel() {
   let resumeTimerId;
 
   const updateCarousel = () => {
-    track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' });
+    viewport.scrollTo({ left: index * viewport.clientWidth, behavior: 'smooth' });
     dots.forEach((dot, dotIndex) => {
       dot.classList.toggle('active', dotIndex === index);
     });
   };
 
   const syncActiveDot = () => {
-    const nextIndex = Math.round(track.scrollLeft / track.clientWidth);
+    const nextIndex = Math.round(viewport.scrollLeft / viewport.clientWidth);
     if (nextIndex !== index && nextIndex >= 0 && nextIndex < slides.length) {
       index = nextIndex;
       dots.forEach((dot, dotIndex) => {
@@ -1446,7 +1451,7 @@ function initializeMarketCarousel() {
     });
   });
 
-  track.addEventListener('scroll', syncActiveDot, { passive: true });
+  viewport.addEventListener('scroll', syncActiveDot, { passive: true });
 
   const startAutoSlide = () => {
     window.clearInterval(timerId);
@@ -1466,10 +1471,10 @@ function initializeMarketCarousel() {
     resumeTimerId = window.setTimeout(startAutoSlide, 3000);
   };
 
-  track.addEventListener('mouseenter', pauseAutoSlide);
-  track.addEventListener('mouseleave', resumeAutoSlide);
-  track.addEventListener('touchstart', pauseAutoSlide, { passive: true });
-  track.addEventListener('touchend', resumeAutoSlide, { passive: true });
+  viewport.addEventListener('mouseenter', pauseAutoSlide);
+  viewport.addEventListener('mouseleave', resumeAutoSlide);
+  viewport.addEventListener('touchstart', pauseAutoSlide, { passive: true });
+  viewport.addEventListener('touchend', resumeAutoSlide, { passive: true });
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) pauseAutoSlide();
     else startAutoSlide();
