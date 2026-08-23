@@ -22,7 +22,15 @@ const nextPayoutByCycle = (activatedAt, cycleDays = 7) => {
   return new Date(ms + cycleCount * cycleMs);
 };
 
+const monthlyRoiFromWeekly = (weeklyRoi) => (Number(weeklyRoi) * 2) - 3;
+
+const monthlyProfit = (capital, weeklyRoi) => (
+  Number(capital) * monthlyRoiFromWeekly(weeklyRoi) / 100
+);
+
 module.exports = {
   nextSundayFromNowUtc,
   nextPayoutByCycle,
+  monthlyRoiFromWeekly,
+  monthlyProfit,
 };

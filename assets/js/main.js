@@ -388,16 +388,16 @@ const portfolioState = {
 };
 
 const vaultCatalog = {
-  'vault-01': { name: 'Vault 01', tier: 'Starter', capital: 10, roi: 17, totalProfit: 11.7 },
-  'vault-02': { name: 'Vault 02', tier: 'Starter Plus', capital: 25, roi: 17, totalProfit: 29.25 },
-  'vault-03': { name: 'Vault 03', tier: 'Growth', capital: 50, roi: 17, totalProfit: 58.5 },
-  'vault-04': { name: 'Vault 04', tier: 'Growth Plus', capital: 100, roi: 18, totalProfit: 118 },
-  'vault-05': { name: 'Vault 05', tier: 'Pro', capital: 150, roi: 18, totalProfit: 177 },
-  'vault-06': { name: 'Vault 06', tier: 'Pro Plus', capital: 250, roi: 19, totalProfit: 397.25 },
-  'vault-07': { name: 'Vault 07', tier: 'Advanced', capital: 500, roi: 20, totalProfit: 891.54 },
-  'vault-08': { name: 'Vault 08', tier: 'Advanced Plus', capital: 750, roi: 21, totalProfit: 1435.9 },
-  'vault-09': { name: 'Vault 09', tier: 'Elite', capital: 1000, roi: 22, totalProfit: 2080 },
-  'vault-10': { name: 'Vault 10', tier: 'Institutional', capital: 1500, roi: 23, totalProfit: 3315 },
+  'vault-01': { name: 'Vault 01', tier: 'Starter', capital: 10, roi: 31, totalProfit: 3.1 },
+  'vault-02': { name: 'Vault 02', tier: 'Starter Plus', capital: 25, roi: 31, totalProfit: 7.75 },
+  'vault-03': { name: 'Vault 03', tier: 'Growth', capital: 50, roi: 31, totalProfit: 15.5 },
+  'vault-04': { name: 'Vault 04', tier: 'Growth Plus', capital: 100, roi: 33, totalProfit: 33 },
+  'vault-05': { name: 'Vault 05', tier: 'Pro', capital: 150, roi: 33, totalProfit: 49.5 },
+  'vault-06': { name: 'Vault 06', tier: 'Pro Plus', capital: 250, roi: 35, totalProfit: 87.5 },
+  'vault-07': { name: 'Vault 07', tier: 'Advanced', capital: 500, roi: 37, totalProfit: 185 },
+  'vault-08': { name: 'Vault 08', tier: 'Advanced Plus', capital: 750, roi: 39, totalProfit: 292.5 },
+  'vault-09': { name: 'Vault 09', tier: 'Elite', capital: 1000, roi: 41, totalProfit: 410 },
+  'vault-10': { name: 'Vault 10', tier: 'Institutional', capital: 1500, roi: 43, totalProfit: 645 },
 };
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -431,7 +431,7 @@ const getUpcomingSunday = (referenceDate = new Date()) => {
   return normalized;
 };
 
-const getNextPayoutDate = (joinedAt) => {
+const getNextPayoutDate = (joinedAt, cycleDays = 30) => {
   const joinedDate = new Date(joinedAt);
   const now = new Date();
 
@@ -440,7 +440,10 @@ const getNextPayoutDate = (joinedAt) => {
   }
 
   const reference = joinedDate > now ? joinedDate : now;
-  return getUpcomingSunday(reference);
+  const cycleMs = Math.max(1, Number(cycleDays)) * 24 * 60 * 60 * 1000;
+  const elapsed = Math.max(0, now.getTime() - joinedDate.getTime());
+  const cycles = Math.floor(elapsed / cycleMs) + 1;
+  return new Date(joinedDate.getTime() + cycles * cycleMs);
 };
 
 const payoutDateFormatter = new Intl.DateTimeFormat('en-GB', {
@@ -1222,7 +1225,7 @@ const renderVaultActivationState = () => {
     }
 
     const button = card.querySelector('[data-invest-btn]');
-    const cycleDays = Number(card.dataset.payoutCycleDays || 7);
+    const cycleDays = Number(card.dataset.payoutCycleDays || 30);
     const isActive = isVaultActive(vaultId);
     let statusNode = card.querySelector('[data-vault-status]');
     if (!statusNode) {
@@ -1247,7 +1250,7 @@ const renderVaultActivationState = () => {
     const nextPayout = getNextPayoutDate(joinedAt, cycleDays);
     statusNode.classList.remove('inactive');
     statusNode.classList.add('active');
-    statusNode.textContent = `Status: Active | Next payout ${nextPayout ? payoutDateFormatter.format(nextPayout) : 'Unavailable'}`;
+    statusNode.textContent = `Status: Active | Next monthly payout ${nextPayout ? payoutDateFormatter.format(nextPayout) : 'Unavailable'}`;
     if (button) {
       button.disabled = true;
       button.textContent = 'TIER ACTIVE';
@@ -1263,7 +1266,7 @@ const openVaultModal = (vaultId) => {
 
   pendingVaultId = vaultId;
   const card = document.querySelector(`[data-vault-id="${vaultId}"]`);
-  const cycleDays = Number(card?.dataset.payoutCycleDays || 7);
+  const cycleDays = Number(card?.dataset.payoutCycleDays || 30);
   const joinedAt = card?.dataset.joinedAt || new Date().toISOString();
   const nextPayout = getNextPayoutDate(joinedAt, cycleDays);
   const active = isVaultActive(vaultId);
@@ -1272,10 +1275,10 @@ const openVaultModal = (vaultId) => {
     <p><strong>${vault.name}</strong></p>
     <p>Tier: <strong>${vault.tier}</strong></p>
     <p>Capital Required: <strong>${formatUsd(vault.capital)}</strong></p>
-    <p>Weekly ROI: <strong>${vault.roi}%</strong></p>
-    <p>Expected Total Payout: <strong>${formatUsd(vault.totalProfit)}</strong></p>
+    <p>Monthly ROI: <strong>${vault.roi}%</strong></p>
+    <p>Monthly Profit: <strong>${formatUsd(vault.totalProfit)}</strong></p>
     <p>Current Balance: <strong>${formatUsd(portfolioState.balance)}</strong></p>
-    <p>Projected Next Payout: <strong>${nextPayout ? payoutDateFormatter.format(nextPayout) : payoutDateFormatter.format(getUpcomingSunday(new Date()))}</strong></p>
+    <p>Projected Next Monthly Payout: <strong>${nextPayout ? payoutDateFormatter.format(nextPayout) : payoutDateFormatter.format(getNextPayoutDate(new Date(), 30))}</strong></p>
     <p>Status: <strong>${active ? 'Active' : 'Locked'}</strong></p>
   `;
 
@@ -1376,13 +1379,13 @@ const renderVaultCards = () => {
       const joinedAt = localStorage.getItem(`${VAULT_JOINED_STORAGE_PREFIX}${vaultId}`) || new Date().toISOString();
       const isActive = isVaultActive(vaultId);
       return `
-        <article class="panel vault-card" data-vault-id="${vaultId}" data-joined-at="${joinedAt}" data-payout-cycle-days="7">
+        <article class="panel vault-card" data-vault-id="${vaultId}" data-joined-at="${joinedAt}" data-payout-cycle-days="30">
           <span class="promo-badge">${vault.tier.toUpperCase()}</span>
           <h3>${vault.name.toUpperCase()}</h3>
           <p class="vault-row"><span>Capital</span><span>${formatUsd(vault.capital)}</span></p>
-          <p class="vault-row"><span>Weekly ROI</span><span>${vault.roi}%</span></p>
-          <p class="vault-row"><span>Total Profit</span><span>${formatUsd(vault.totalProfit)}</span></p>
-          <p class="vault-date">Next Payout: <span data-next-payout></span></p>
+          <p class="vault-row"><span>Monthly ROI</span><span>${vault.roi}%</span></p>
+          <p class="vault-row"><span>Monthly Profit</span><span>${formatUsd(vault.totalProfit)}</span></p>
+          <p class="vault-date">Next Monthly Payout: <span data-next-payout></span></p>
           <p class="vault-activation ${isActive ? 'active' : 'inactive'}" data-vault-status>${isActive ? 'Status: Active' : 'Status: Locked tier'}</p>
           <button class="vault-btn" type="button" data-invest-btn>${isActive ? 'TIER ACTIVE' : 'INVEST NOW'}</button>
         </article>
@@ -1719,7 +1722,7 @@ function initializeVaultPayoutDates() {
       return;
     }
 
-    const cycleDays = Number(card.dataset.payoutCycleDays || 7);
+    const cycleDays = Number(card.dataset.payoutCycleDays || 30);
     const joinedAt = card.dataset.joinedAt;
     const payoutDate = getNextPayoutDate(joinedAt, cycleDays);
     payoutNode.textContent = payoutDate ? payoutDateFormatter.format(payoutDate) : 'Unavailable';

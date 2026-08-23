@@ -1,14 +1,22 @@
 const express = require('express');
 const pool = require('../db/pool');
 const { authenticate } = require('../middleware/auth');
-const { nextSundayFromNowUtc } = require('../services/vaultMath');
+const { nextPayoutByCycle, monthlyRoiFromWeekly, monthlyProfit } = require('../services/vaultMath');
 
 const router = express.Router();
 
 router.get('/catalog', async (_req, res, next) => {
   try {
     const result = await pool.query('SELECT vault_id, title, tier, capital_usd, weekly_roi_percent, cycle_days FROM vault_catalog ORDER BY capital_usd ASC');
-    res.json({ ok: true, vaults: result.rows });
+    res.json({ ok: true, vaults: result.rows.map((vault) => ({
+      vaultId: vault.vault_id,
+      title: vault.title,
+      tier: vault.tier,
+      capitalUsd: Number(vault.capital_usd),
+      monthlyRoiPercent: monthlyRoiFromWeekly(vault.weekly_roi_percent),
+      monthlyProfitUsd: monthlyProfit(vault.capital_usd, vault.weekly_roi_percent),
+      cycleDays: 30,
+    })) });
   } catch (error) {
     next(error);
   }
@@ -59,7 +67,7 @@ router.post('/invest', authenticate, async (req, res, next) => {
     await client.query('UPDATE accounts SET balance_usd = balance_usd - $1 WHERE user_id = $2', [capital, req.user.id]);
 
     const activatedAt = new Date();
-    const nextPayout = nextSundayFromNowUtc(activatedAt);
+    const nextPayout = nextPayoutByCycle(activatedAt, 30);
 
     const investment = await client.query(
       `INSERT INTO vault_investments
@@ -84,6 +92,8 @@ router.post('/invest', authenticate, async (req, res, next) => {
         name: vault.title,
         capital,
         roi: Number(vault.weekly_roi_percent),
+        monthlyRoi: monthlyRoiFromWeekly(vault.weekly_roi_percent),
+        monthlyProfit: monthlyProfit(vault.capital_usd, vault.weekly_roi_percent),
         activatedAt: investment.rows[0].activated_at,
         payoutStart: investment.rows[0].next_payout_at,
         status: 'active',

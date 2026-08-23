@@ -1,5 +1,5 @@
 const pool = require('../db/pool');
-const { nextSundayFromNowUtc } = require('./vaultMath');
+const { nextPayoutByCycle, monthlyRoiFromWeekly, monthlyProfit } = require('./vaultMath');
 
 const MIN_WITHDRAWAL = 5;
 
@@ -30,7 +30,8 @@ const getSummary = async (userId) => {
     vaults[row.vault_id] = {
       status: row.status,
       capital: Number(row.capital_usd),
-      roi: Number(row.weekly_roi_percent),
+      roi: monthlyRoiFromWeekly(row.weekly_roi_percent),
+      monthlyProfit: monthlyProfit(row.capital_usd, row.weekly_roi_percent),
       activatedAt: row.activated_at,
       payoutStart: row.next_payout_at,
     };
@@ -158,7 +159,7 @@ const investVault = async ({ userId, vaultId }) => {
     await client.query('UPDATE accounts SET balance_usd = balance_usd - $1 WHERE user_id = $2', [capital, userId]);
 
     const activatedAt = new Date();
-    const nextPayoutAt = nextSundayFromNowUtc(new Date());
+    const nextPayoutAt = nextPayoutByCycle(new Date(), 30);
 
     const investmentRes = await client.query(
       `INSERT INTO vault_investments (user_id, vault_id, status, capital_usd, weekly_roi_percent, activated_at, next_payout_at)

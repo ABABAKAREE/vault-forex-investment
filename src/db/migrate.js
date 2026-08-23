@@ -113,6 +113,8 @@ INSERT INTO vault_catalog (vault_id, title, tier, capital_usd, weekly_roi_percen
 ('vault-09', 'Vault 09', 'Elite', 1000, 22, 7),
 ('vault-10', 'Vault 10', 'Institutional', 1500, 23, 7)
 ON CONFLICT (vault_id) DO NOTHING;
+
+UPDATE vault_catalog SET cycle_days = 30;
 `;
 
 const migrate = async () => {
