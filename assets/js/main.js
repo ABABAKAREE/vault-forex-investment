@@ -32,21 +32,30 @@ if (themeToggle) {
 const languageSelector = document.getElementById('language-selector');
 const savedLanguage = localStorage.getItem('vaultLanguage');
 
-if (savedLanguage) {
-  document.documentElement.lang = savedLanguage;
-}
+const translations = {
+  en: { home: 'Home', marketplace: 'Marketplace', community: 'Community', mine: 'Mine', settings: 'Settings', account: 'My Account', language: 'Language', save: 'Save Profile Updates', fullName: 'Full Name', phone: 'Phone Number', email: 'Email Address', accountId: 'Account Number / ID', registrationDate: 'Registration Date', logout: 'Logout', logoutNow: 'Logout Now', transactions: 'Transactions', depositStatus: 'Deposit status', accountHistory: 'Account history' },
+  sw: { home: 'Nyumbani', marketplace: 'Soko', community: 'Jamii', mine: 'Wasifu', settings: 'Mipangilio', account: 'Akaunti Yangu', language: 'Lugha', save: 'Hifadhi Mabadiliko ya Wasifu', fullName: 'Jina Kamili', phone: 'Namba ya Simu', email: 'Barua Pepe', accountId: 'Namba / Kitambulisho cha Akaunti', registrationDate: 'Tarehe ya Usajili', logout: 'Toka', logoutNow: 'Toka Sasa', transactions: 'Miamala', depositStatus: 'Hali ya amana', accountHistory: 'Historia ya akaunti' },
+  fr: { home: 'Accueil', marketplace: 'Marché', community: 'Communauté', mine: 'Profil', settings: 'Paramètres', account: 'Mon compte', language: 'Langue', save: 'Enregistrer le profil', fullName: 'Nom complet', phone: 'Numéro de téléphone', email: 'Adresse e-mail', accountId: 'Numéro / ID du compte', registrationDate: "Date d'inscription", logout: 'Déconnexion', logoutNow: 'Se déconnecter', transactions: 'Transactions', depositStatus: 'Statut du dépôt', accountHistory: 'Historique du compte' },
+};
 
-if (languageSelector) {
-  if (savedLanguage) {
-    languageSelector.value = savedLanguage;
-  }
+  hydrateProfile();
+  hydrateProfile();
 
-  languageSelector.addEventListener('change', () => {
-    const selectedLanguage = languageSelector.value;
-    document.documentElement.lang = selectedLanguage;
-    localStorage.setItem('vaultLanguage', selectedLanguage);
+const applyLanguage = (language) => {
+  const selectedLanguage = translations[language] ? language : 'en';
+  document.documentElement.lang = selectedLanguage;
+  document.querySelectorAll('[data-i18n]').forEach((node) => {
+    const text = translations[selectedLanguage][node.dataset.i18n];
+    if (text) node.textContent = text;
   });
-}
+  if (languageSelector) languageSelector.value = selectedLanguage;
+};
+
+applyLanguage(savedLanguage || 'en');
+languageSelector?.addEventListener('change', () => {
+  localStorage.setItem('vaultLanguage', languageSelector.value);
+  applyLanguage(languageSelector.value);
+});
 
 const togglePasswordButton = document.getElementById('toggle-password');
 const editPasswordButton = document.getElementById('edit-password');
@@ -75,12 +84,13 @@ const API_BASE_URL = window.location.protocol === 'file:'
 const initializeBottomNavigation = () => {
   document.querySelectorAll('.bottom-nav').forEach((nav) => {
     nav.innerHTML = `
-      <a href="home.html" class="${currentPage === 'home.html' ? 'active' : ''}"><span class="nav-icon">⌂</span><span>Home</span></a>
-      <a href="plans.html" class="${currentPage === 'plans.html' ? 'active' : ''}"><span class="nav-icon">▦</span><span>Marketplace</span></a>
-      <a href="community.html" class="${currentPage === 'community.html' ? 'active' : ''}"><span class="nav-icon">◎</span><span>Community</span></a>
-      <a href="my-account.html" class="${currentPage === 'my-account.html' ? 'active' : ''}"><span class="nav-icon">◉</span><span>Mine</span></a>
+      <a href="home.html" class="${currentPage === 'home.html' ? 'active' : ''}"><span class="nav-icon">⌂</span><span data-i18n="home">Home</span></a>
+      <a href="plans.html" class="${currentPage === 'plans.html' ? 'active' : ''}"><span class="nav-icon">▦</span><span data-i18n="marketplace">Marketplace</span></a>
+      <a href="community.html" class="${currentPage === 'community.html' ? 'active' : ''}"><span class="nav-icon">◎</span><span data-i18n="community">Community</span></a>
+      <a href="my-account.html" class="${currentPage === 'my-account.html' ? 'active' : ''}"><span class="nav-icon">◉</span><span data-i18n="mine">Mine</span></a>
     `;
   });
+  applyLanguage(localStorage.getItem('vaultLanguage') || 'en');
 };
 
 initializeBottomNavigation();
@@ -107,6 +117,7 @@ const hydrateProfile = () => {
 };
 
 hydrateProfile();
+
 
 if (window.location.protocol === 'file:') {
   const redirectUrl = currentPage === 'index.html' ? STATIC_SERVER : `${STATIC_SERVER}/${currentPage}`;
@@ -162,6 +173,65 @@ const apiRequest = async (endpoint, options = {}) => {
     return { ok: false, message: 'Network error. Try again.' };
   }
 };
+
+const updateProfileFields = (user) => {
+  const fields = {
+    'profile-full-name': user.full_name || user.name || '',
+    'profile-email': user.email || '',
+    'profile-phone': user.phone || '',
+    'profile-account-id': user.id || '',
+    'profile-created-at': user.created_at ? new Date(user.created_at).toLocaleDateString() : '',
+  };
+  Object.entries(fields).forEach(([id, value]) => {
+    const field = document.getElementById(id);
+    if (field) field.value = value;
+  });
+};
+
+const hydrateProfileFromApi = async () => {
+  if (!document.getElementById('profile-full-name') || !getAuthToken()) return;
+  const result = await apiRequest('/api/account/profile');
+  if (result?.ok && result.user) {
+    updateProfileFields(result.user);
+    setAuthSession(localStorage.getItem(AUTH_TOKEN_KEY), result.user);
+  }
+};
+
+const initializeProfileSave = () => {
+  const saveButton = document.getElementById('save-profile-updates');
+  if (!saveButton) return;
+  const feedback = document.getElementById('profile-feedback');
+  saveButton.addEventListener('click', async () => {
+    const fullName = document.getElementById('profile-full-name')?.value.trim();
+    const phone = document.getElementById('profile-phone')?.value.trim();
+    const password = document.getElementById('account-password')?.value || '';
+    if (!fullName || (password && password.length < 8)) {
+      feedback.textContent = 'Enter a full name and an optional password of at least 8 characters.';
+      feedback.className = 'auth-feedback error';
+      return;
+    }
+    saveButton.disabled = true;
+    const result = await apiRequest('/api/account/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fullName, phone, password }),
+    });
+    saveButton.disabled = false;
+    if (!result?.ok) {
+      feedback.textContent = result?.message || 'Could not save profile updates.';
+      feedback.className = 'auth-feedback error';
+      return;
+    }
+    updateProfileFields(result.user);
+    setAuthSession(localStorage.getItem(AUTH_TOKEN_KEY), result.user);
+    if (document.getElementById('account-password')) document.getElementById('account-password').value = '';
+    feedback.textContent = 'Profile updates saved.';
+    feedback.className = 'auth-feedback success';
+  });
+};
+
+hydrateProfileFromApi();
+initializeProfileSave();
 
 togglePasswordButton?.addEventListener('click', () => {
   if (!accountPassword) {

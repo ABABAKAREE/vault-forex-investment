@@ -1,8 +1,56 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const pool = require('../db/pool');
 const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
+
+router.get('/profile', authenticate, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, full_name, email, phone, role, created_at
+       FROM users WHERE id = $1`,
+      [req.user.id]
+    );
+    if (!result.rows[0]) {
+      res.status(404).json({ ok: false, message: 'User profile not found.' });
+      return;
+    }
+    res.json({ ok: true, user: result.rows[0] });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch('/profile', authenticate, async (req, res, next) => {
+  const fullName = String(req.body?.fullName || '').trim();
+  const phone = String(req.body?.phone || '').trim() || null;
+  const password = String(req.body?.password || '');
+  if (fullName.length < 2 || (password && password.length < 8)) {
+    res.status(400).json({ ok: false, message: 'Full name is required and password must contain at least 8 characters.' });
+    return;
+  }
+
+  try {
+    const passwordHash = password ? await bcrypt.hash(password, 12) : null;
+    const result = await pool.query(
+      `UPDATE users
+       SET full_name = $1,
+           phone = $2,
+           password_hash = COALESCE($3, password_hash)
+       WHERE id = $4
+       RETURNING id, full_name, email, phone, role, created_at`,
+      [fullName, phone, passwordHash, req.user.id]
+    );
+    if (result.rowCount !== 1) {
+      res.status(404).json({ ok: false, message: 'User profile not found.' });
+      return;
+    }
+    res.json({ ok: true, user: result.rows[0] });
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.get('/summary', authenticate, async (req, res, next) => {
   try {

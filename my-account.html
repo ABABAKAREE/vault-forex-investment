@@ -14,7 +14,7 @@
     <main class="main-area">
       <section class="panel topbar">
         <div class="topbar-copy">
-          <p class="topbar-kicker">My Account</p>
+          <p class="topbar-kicker" data-i18n="account">My Account</p>
           <h1>Manage your profile in one focused view</h1>
           <p>Keep your personal details, account reference, and password controls secure and easy to update.</p>
         </div>
@@ -27,22 +27,22 @@
       <section class="panel account-panel" aria-label="User Profile Information">
         <div class="form-grid">
           <label class="field-group">
-            <span>Full Name</span>
+            <span data-i18n="fullName">Full Name</span>
             <input type="text" id="profile-full-name" value="" placeholder="Enter full name" />
           </label>
 
           <label class="field-group">
-            <span>Email Address</span>
+            <span data-i18n="email">Email Address</span>
             <input type="email" id="profile-email" value="" placeholder="you@example.com" readonly />
           </label>
 
           <label class="field-group">
-            <span>Phone Number</span>
+            <span data-i18n="phone">Phone Number</span>
             <input type="tel" id="profile-phone" value="" placeholder="+255 7XX XXX XXX" />
           </label>
 
           <label class="field-group">
-            <span>Account Number / ID</span>
+            <span data-i18n="accountId">Account Number / ID</span>
             <input type="text" id="profile-account-id" value="" placeholder="Generated after verification" readonly />
           </label>
 
@@ -56,13 +56,14 @@
           </div>
 
           <label class="field-group">
-            <span>Registration Date</span>
+            <span data-i18n="registrationDate">Registration Date</span>
             <input type="text" id="profile-created-at" value="" placeholder="Will appear after account activation" readonly />
           </label>
         </div>
 
         <div class="form-actions">
-          <button type="button" class="primary-btn">Save Profile Updates</button>
+          <button type="button" class="primary-btn" id="save-profile-updates" data-i18n="save">Save Profile Updates</button>
+          <p class="auth-feedback" id="profile-feedback" role="status"></p>
         </div>
       </section>
     </main>

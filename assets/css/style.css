@@ -1239,6 +1239,32 @@ h3,
   gap: 12px;
 }
 
+.project-info-slide {
+  align-content: center;
+}
+
+.market-status-copy {
+  max-width: 620px;
+  margin: 12px 0;
+  color: var(--vault-muted);
+  line-height: 1.55;
+}
+
+.project-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.project-flow span {
+  border: 1px solid rgba(0, 210, 255, 0.25);
+  border-radius: 8px;
+  padding: 7px 9px;
+  color: var(--vault-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .admin-deposit-tabs {
   display: flex;
   gap: 8px;
