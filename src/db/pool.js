@@ -2,9 +2,9 @@ const { Pool } = require('pg');
 const { databaseUrl } = require('../config/env');
 
 const vaultSeed = [
-  { vault_id: 'vault-01', title: 'Vault 01', tier: 'Starter', capital_usd: 10, weekly_roi_percent: 40, cycle_days: 30 },
-  { vault_id: 'vault-02', title: 'Vault 02', tier: 'Starter Plus', capital_usd: 25, weekly_roi_percent: 40, cycle_days: 30 },
-  { vault_id: 'vault-03', title: 'Vault 03', tier: 'Growth', capital_usd: 50, weekly_roi_percent: 40, cycle_days: 30 },
+  { vault_id: 'vault-01', title: 'Vault 01', tier: 'Starter', capital_usd: 10, weekly_roi_percent: 55, cycle_days: 30 },
+  { vault_id: 'vault-02', title: 'Vault 02', tier: 'Starter Plus', capital_usd: 25, weekly_roi_percent: 55, cycle_days: 30 },
+  { vault_id: 'vault-03', title: 'Vault 03', tier: 'Growth', capital_usd: 50, weekly_roi_percent: 55, cycle_days: 30 },
   { vault_id: 'vault-04', title: 'Vault 04', tier: 'Growth Plus', capital_usd: 100, weekly_roi_percent: 40, cycle_days: 30 },
   { vault_id: 'vault-05', title: 'Vault 05', tier: 'Pro', capital_usd: 150, weekly_roi_percent: 40, cycle_days: 30 },
   { vault_id: 'vault-06', title: 'Vault 06', tier: 'Pro Plus', capital_usd: 250, weekly_roi_percent: 40, cycle_days: 30 },

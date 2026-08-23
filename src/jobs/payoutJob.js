@@ -8,7 +8,7 @@ const runPayoutCycle = async () => {
     await client.query('BEGIN');
 
     const dueInvestments = await client.query(
-      `SELECT vi.id, vi.user_id, vi.vault_id, vi.capital_usd, vi.weekly_roi_percent, vi.next_payout_at, vc.cycle_days
+      `SELECT vi.id, vi.user_id, vi.vault_id, vi.capital_usd, vc.weekly_roi_percent, vi.next_payout_at, vc.cycle_days
        FROM vault_investments vi
        JOIN vault_catalog vc ON vc.vault_id = vi.vault_id
        WHERE vi.status = 'active' AND vi.next_payout_at <= NOW()

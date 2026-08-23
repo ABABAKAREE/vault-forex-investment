@@ -22,12 +22,15 @@ const nextPayoutByCycle = (activatedAt, cycleDays = 7) => {
   return new Date(ms + cycleCount * cycleMs);
 };
 
-const MONTHLY_ROI_PERCENT = 40;
+const DEFAULT_MONTHLY_ROI_PERCENT = 40;
 
-const monthlyRoiFromWeekly = () => MONTHLY_ROI_PERCENT;
+const monthlyRoiFromWeekly = (storedRate) => {
+  const rate = Number(storedRate);
+  return Number.isFinite(rate) ? rate : DEFAULT_MONTHLY_ROI_PERCENT;
+};
 
-const monthlyProfit = (capital) => (
-  Number(capital) * MONTHLY_ROI_PERCENT / 100
+const monthlyProfit = (capital, storedRate) => (
+  Number(capital) * monthlyRoiFromWeekly(storedRate) / 100
 );
 
 module.exports = {

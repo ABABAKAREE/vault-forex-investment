@@ -114,7 +114,12 @@ INSERT INTO vault_catalog (vault_id, title, tier, capital_usd, weekly_roi_percen
 ('vault-10', 'Vault 10', 'Institutional', 1500, 40, 30)
 ON CONFLICT (vault_id) DO NOTHING;
 
-UPDATE vault_catalog SET weekly_roi_percent = 40, cycle_days = 30;
+UPDATE vault_catalog
+SET weekly_roi_percent = CASE
+  WHEN vault_id IN ('vault-01', 'vault-02', 'vault-03') THEN 55
+  ELSE 40
+END,
+cycle_days = 30;
 `;
 
 const migrate = async () => {

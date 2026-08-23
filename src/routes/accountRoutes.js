@@ -65,7 +65,7 @@ router.get('/summary', authenticate, async (req, res, next) => {
         [req.user.id]
       ),
       pool.query(
-        `SELECT vi.vault_id, vi.capital_usd, vi.weekly_roi_percent, vi.status, vi.activated_at, vi.next_payout_at, vc.title
+        `SELECT vi.vault_id, vi.capital_usd, vc.weekly_roi_percent, vi.status, vi.activated_at, vi.next_payout_at, vc.title
          FROM vault_investments vi
          JOIN vault_catalog vc ON vc.vault_id = vi.vault_id
          WHERE vi.user_id = $1 AND vi.status = 'active'`,

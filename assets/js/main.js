@@ -388,9 +388,9 @@ const portfolioState = {
 };
 
 const vaultCatalog = {
-  'vault-01': { name: 'Vault 01', tier: 'Starter', capital: 10, roi: 40, totalProfit: 4 },
-  'vault-02': { name: 'Vault 02', tier: 'Starter Plus', capital: 25, roi: 40, totalProfit: 10 },
-  'vault-03': { name: 'Vault 03', tier: 'Growth', capital: 50, roi: 40, totalProfit: 20 },
+  'vault-01': { name: 'Vault 01', tier: 'Starter', capital: 10, roi: 55, totalProfit: 5.5 },
+  'vault-02': { name: 'Vault 02', tier: 'Starter Plus', capital: 25, roi: 55, totalProfit: 13.75 },
+  'vault-03': { name: 'Vault 03', tier: 'Growth', capital: 50, roi: 55, totalProfit: 27.5 },
   'vault-04': { name: 'Vault 04', tier: 'Growth Plus', capital: 100, roi: 40, totalProfit: 40 },
   'vault-05': { name: 'Vault 05', tier: 'Pro', capital: 150, roi: 40, totalProfit: 60 },
   'vault-06': { name: 'Vault 06', tier: 'Pro Plus', capital: 250, roi: 40, totalProfit: 100 },
