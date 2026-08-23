@@ -1003,10 +1003,12 @@ transactionForm?.addEventListener('submit', async (event) => {
 
   const submittedForm = event.currentTarget;
   const submittedReferenceInput = submittedForm.elements.namedItem('transaction-reference-input');
+  const submittedAgentNameInput = submittedForm.elements.namedItem('deposit-agent-name');
   const submittedReceiptInput = submittedForm.elements.namedItem('receipt-input');
   const amount = Number(transactionAmountInput?.value || 0);
   const accountValue = transactionAccountInput?.value.trim();
   const referenceValue = submittedReferenceInput?.value.trim() || '';
+  const agentName = submittedAgentNameInput?.value.trim() || '';
   const method = transactionState.method;
   const isCrypto = method === 'usdt' || method === 'btc';
   const isBank = method === 'bank';
@@ -1028,8 +1030,8 @@ transactionForm?.addEventListener('submit', async (event) => {
   if (transactionState.type === 'deposit' && !isCrypto && !isBank) {
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
     const receiptFile = submittedReceiptInput?.files?.[0];
-    if (!token || !receiptFile) {
-      alert(!token ? 'Please sign in again before submitting a deposit.' : 'Please select a receipt image before submitting.');
+    if (!token || !receiptFile || !agentName) {
+      alert(!token ? 'Please sign in again before submitting a deposit.' : !agentName ? 'Please enter the registered agent or line name.' : 'Please select a receipt image before submitting.');
       return;
     }
     const transactionId = referenceValue || `PENDING-${Date.now()}`;
@@ -1037,6 +1039,7 @@ transactionForm?.addEventListener('submit', async (event) => {
     formData.append('networkSelected', method);
     formData.append('amount', String(amount));
     formData.append('transactionId', transactionId);
+    formData.append('agentName', agentName);
     formData.append('receipt', receiptFile, receiptFile.name);
     const submitButton = submittedForm.querySelector('#submit-transaction');
     if (submitButton) {

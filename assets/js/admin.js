@@ -15,6 +15,7 @@ const renderDeposits = (deposits) => {
         <h2>${deposit.full_name || deposit.email}</h2>
         <p>${deposit.email}</p>
         <p><strong>$${Number(deposit.amount_usd).toFixed(2)}</strong> · Transaction ID: <strong>${deposit.transaction_id}</strong></p>
+        <p>Registered agent/line name: <strong>${deposit.agent_name || 'Not provided'}</strong></p>
         <p class="admin-muted">Submitted ${new Date(deposit.created_at).toLocaleString()}</p>
         ${deposit.reviewed_at ? `<p class="admin-muted">Reviewed ${new Date(deposit.reviewed_at).toLocaleString()}</p>` : ''}
       </div>

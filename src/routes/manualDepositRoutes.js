@@ -31,9 +31,10 @@ router.post('/', authenticate, upload.single('receipt'), async (req, res, next) 
   const network = String(req.body?.networkSelected || '').toLowerCase();
   const amount = Number(req.body?.amount);
   const transactionId = String(req.body?.transactionId || `PENDING-${Date.now()}`).trim();
+  const agentName = String(req.body?.agentName || '').trim();
 
-  if (!paymentNetworks[network] || !Number.isFinite(amount) || amount <= 0 || !transactionId || !req.file) {
-    res.status(400).json({ ok: false, message: 'Network, amount, transaction ID, and receipt image are required.' });
+  if (!paymentNetworks[network] || !Number.isFinite(amount) || amount <= 0 || !transactionId || !agentName || !req.file) {
+    res.status(400).json({ ok: false, message: 'Network, amount, transaction ID, registered agent/line name, and receipt image are required.' });
     return;
   }
 
@@ -43,10 +44,10 @@ router.post('/', authenticate, upload.single('receipt'), async (req, res, next) 
     try {
       await client.query('BEGIN');
       const result = await client.query(
-      `INSERT INTO manual_deposits (user_id, network_selected, amount_usd, transaction_id, receipt_image_url)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO manual_deposits (user_id, network_selected, amount_usd, transaction_id, agent_name, receipt_image_url)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id, status, created_at`,
-      [req.user.id, network, amount, transactionId, receiptImageUrl]
+      [req.user.id, network, amount, transactionId, agentName, receiptImageUrl]
       );
       const deposit = result.rows[0];
       await client.query(
@@ -74,7 +75,7 @@ router.post('/', authenticate, upload.single('receipt'), async (req, res, next) 
 router.get('/pending', authenticate, requireAdmin, async (_req, res, next) => {
   try {
     const result = await pool.query(
-      `SELECT md.id, md.network_selected, md.amount_usd, md.transaction_id, md.receipt_image_url,
+      `SELECT md.id, md.network_selected, md.amount_usd, md.transaction_id, md.agent_name, md.receipt_image_url,
               md.status, md.created_at, u.email, u.full_name
        FROM manual_deposits md JOIN users u ON u.id = md.user_id
        WHERE md.status = 'pending' ORDER BY md.created_at ASC`
@@ -94,7 +95,7 @@ router.get('/all', authenticate, requireAdmin, async (req, res, next) => {
 
   try {
     const result = await pool.query(
-      `SELECT md.id, md.network_selected, md.amount_usd, md.transaction_id, md.receipt_image_url,
+      `SELECT md.id, md.network_selected, md.amount_usd, md.transaction_id, md.agent_name, md.receipt_image_url,
               md.status, md.created_at, md.reviewed_at, u.email, u.full_name
        FROM manual_deposits md JOIN users u ON u.id = md.user_id
        WHERE ($1 = '' OR md.status = $1)

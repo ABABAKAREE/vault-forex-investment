@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS manual_deposits (
   network_selected TEXT NOT NULL CHECK (network_selected IN ('mpesa', 'tigo', 'airtel', 'halopesa')),
   amount_usd NUMERIC(14,2) NOT NULL CHECK (amount_usd > 0),
   transaction_id TEXT NOT NULL,
+  agent_name TEXT,
   receipt_image_url TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
   reviewed_by UUID REFERENCES users(id),
@@ -78,6 +79,8 @@ CREATE TABLE IF NOT EXISTS manual_deposits (
 
 CREATE UNIQUE INDEX IF NOT EXISTS manual_deposits_network_transaction_idx
 ON manual_deposits (network_selected, transaction_id);
+
+ALTER TABLE manual_deposits ADD COLUMN IF NOT EXISTS agent_name TEXT;
 
 CREATE OR REPLACE FUNCTION set_updated_at()
 RETURNS TRIGGER AS $$

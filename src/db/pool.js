@@ -103,7 +103,7 @@ const createMockClient = (state) => ({
     }
 
     if (upper.includes('INSERT INTO MANUAL_DEPOSITS')) {
-      const [userId, network, amount, transactionId, receiptImageUrl] = params;
+      const [userId, network, amount, transactionId, agentName, receiptImageUrl] = params;
       const duplicate = this.state.manualDeposits.find((entry) => entry.network_selected === network && entry.transaction_id === transactionId);
       if (duplicate) return Promise.reject(new Error('manual_deposits_network_transaction_idx duplicate key'));
       const deposit = {
@@ -112,6 +112,7 @@ const createMockClient = (state) => ({
         network_selected: network,
         amount_usd: Number(amount),
         transaction_id: transactionId,
+        agent_name: agentName,
         receipt_image_url: receiptImageUrl,
         status: 'pending',
         created_at: new Date().toISOString(),
