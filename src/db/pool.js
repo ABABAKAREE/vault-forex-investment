@@ -2,16 +2,16 @@ const { Pool } = require('pg');
 const { databaseUrl } = require('../config/env');
 
 const vaultSeed = [
-  { vault_id: 'vault-01', title: 'Vault 01', tier: 'Starter', capital_usd: 10, weekly_roi_percent: 17, cycle_days: 7 },
-  { vault_id: 'vault-02', title: 'Vault 02', tier: 'Starter Plus', capital_usd: 25, weekly_roi_percent: 17, cycle_days: 7 },
-  { vault_id: 'vault-03', title: 'Vault 03', tier: 'Growth', capital_usd: 50, weekly_roi_percent: 17, cycle_days: 7 },
-  { vault_id: 'vault-04', title: 'Vault 04', tier: 'Growth Plus', capital_usd: 100, weekly_roi_percent: 18, cycle_days: 7 },
-  { vault_id: 'vault-05', title: 'Vault 05', tier: 'Pro', capital_usd: 150, weekly_roi_percent: 18, cycle_days: 7 },
-  { vault_id: 'vault-06', title: 'Vault 06', tier: 'Pro Plus', capital_usd: 250, weekly_roi_percent: 19, cycle_days: 7 },
-  { vault_id: 'vault-07', title: 'Vault 07', tier: 'Advanced', capital_usd: 500, weekly_roi_percent: 20, cycle_days: 7 },
-  { vault_id: 'vault-08', title: 'Vault 08', tier: 'Advanced Plus', capital_usd: 750, weekly_roi_percent: 21, cycle_days: 7 },
-  { vault_id: 'vault-09', title: 'Vault 09', tier: 'Elite', capital_usd: 1000, weekly_roi_percent: 22, cycle_days: 7 },
-  { vault_id: 'vault-10', title: 'Vault 10', tier: 'Institutional', capital_usd: 1500, weekly_roi_percent: 23, cycle_days: 7 },
+  { vault_id: 'vault-01', title: 'Vault 01', tier: 'Starter', capital_usd: 10, weekly_roi_percent: 40, cycle_days: 30 },
+  { vault_id: 'vault-02', title: 'Vault 02', tier: 'Starter Plus', capital_usd: 25, weekly_roi_percent: 40, cycle_days: 30 },
+  { vault_id: 'vault-03', title: 'Vault 03', tier: 'Growth', capital_usd: 50, weekly_roi_percent: 40, cycle_days: 30 },
+  { vault_id: 'vault-04', title: 'Vault 04', tier: 'Growth Plus', capital_usd: 100, weekly_roi_percent: 40, cycle_days: 30 },
+  { vault_id: 'vault-05', title: 'Vault 05', tier: 'Pro', capital_usd: 150, weekly_roi_percent: 40, cycle_days: 30 },
+  { vault_id: 'vault-06', title: 'Vault 06', tier: 'Pro Plus', capital_usd: 250, weekly_roi_percent: 40, cycle_days: 30 },
+  { vault_id: 'vault-07', title: 'Vault 07', tier: 'Advanced', capital_usd: 500, weekly_roi_percent: 40, cycle_days: 30 },
+  { vault_id: 'vault-08', title: 'Vault 08', tier: 'Advanced Plus', capital_usd: 750, weekly_roi_percent: 40, cycle_days: 30 },
+  { vault_id: 'vault-09', title: 'Vault 09', tier: 'Elite', capital_usd: 1000, weekly_roi_percent: 40, cycle_days: 30 },
+  { vault_id: 'vault-10', title: 'Vault 10', tier: 'Institutional', capital_usd: 1500, weekly_roi_percent: 40, cycle_days: 30 },
 ];
 
 const createMockState = () => ({

@@ -388,16 +388,16 @@ const portfolioState = {
 };
 
 const vaultCatalog = {
-  'vault-01': { name: 'Vault 01', tier: 'Starter', capital: 10, roi: 31, totalProfit: 3.1 },
-  'vault-02': { name: 'Vault 02', tier: 'Starter Plus', capital: 25, roi: 31, totalProfit: 7.75 },
-  'vault-03': { name: 'Vault 03', tier: 'Growth', capital: 50, roi: 31, totalProfit: 15.5 },
-  'vault-04': { name: 'Vault 04', tier: 'Growth Plus', capital: 100, roi: 33, totalProfit: 33 },
-  'vault-05': { name: 'Vault 05', tier: 'Pro', capital: 150, roi: 33, totalProfit: 49.5 },
-  'vault-06': { name: 'Vault 06', tier: 'Pro Plus', capital: 250, roi: 35, totalProfit: 87.5 },
-  'vault-07': { name: 'Vault 07', tier: 'Advanced', capital: 500, roi: 37, totalProfit: 185 },
-  'vault-08': { name: 'Vault 08', tier: 'Advanced Plus', capital: 750, roi: 39, totalProfit: 292.5 },
-  'vault-09': { name: 'Vault 09', tier: 'Elite', capital: 1000, roi: 41, totalProfit: 410 },
-  'vault-10': { name: 'Vault 10', tier: 'Institutional', capital: 1500, roi: 43, totalProfit: 645 },
+  'vault-01': { name: 'Vault 01', tier: 'Starter', capital: 10, roi: 40, totalProfit: 4 },
+  'vault-02': { name: 'Vault 02', tier: 'Starter Plus', capital: 25, roi: 40, totalProfit: 10 },
+  'vault-03': { name: 'Vault 03', tier: 'Growth', capital: 50, roi: 40, totalProfit: 20 },
+  'vault-04': { name: 'Vault 04', tier: 'Growth Plus', capital: 100, roi: 40, totalProfit: 40 },
+  'vault-05': { name: 'Vault 05', tier: 'Pro', capital: 150, roi: 40, totalProfit: 60 },
+  'vault-06': { name: 'Vault 06', tier: 'Pro Plus', capital: 250, roi: 40, totalProfit: 100 },
+  'vault-07': { name: 'Vault 07', tier: 'Advanced', capital: 500, roi: 40, totalProfit: 200 },
+  'vault-08': { name: 'Vault 08', tier: 'Advanced Plus', capital: 750, roi: 40, totalProfit: 300 },
+  'vault-09': { name: 'Vault 09', tier: 'Elite', capital: 1000, roi: 40, totalProfit: 400 },
+  'vault-10': { name: 'Vault 10', tier: 'Institutional', capital: 1500, roi: 40, totalProfit: 600 },
 };
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {

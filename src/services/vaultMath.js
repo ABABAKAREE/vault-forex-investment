@@ -22,10 +22,12 @@ const nextPayoutByCycle = (activatedAt, cycleDays = 7) => {
   return new Date(ms + cycleCount * cycleMs);
 };
 
-const monthlyRoiFromWeekly = (weeklyRoi) => (Number(weeklyRoi) * 2) - 3;
+const MONTHLY_ROI_PERCENT = 40;
 
-const monthlyProfit = (capital, weeklyRoi) => (
-  Number(capital) * monthlyRoiFromWeekly(weeklyRoi) / 100
+const monthlyRoiFromWeekly = () => MONTHLY_ROI_PERCENT;
+
+const monthlyProfit = (capital) => (
+  Number(capital) * MONTHLY_ROI_PERCENT / 100
 );
 
 module.exports = {

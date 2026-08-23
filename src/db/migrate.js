@@ -102,19 +102,19 @@ EXECUTE FUNCTION set_updated_at();
 
 const seedSql = `
 INSERT INTO vault_catalog (vault_id, title, tier, capital_usd, weekly_roi_percent, cycle_days) VALUES
-('vault-01', 'Vault 01', 'Starter', 10, 17, 7),
-('vault-02', 'Vault 02', 'Starter Plus', 25, 17, 7),
-('vault-03', 'Vault 03', 'Growth', 50, 17, 7),
-('vault-04', 'Vault 04', 'Growth Plus', 100, 18, 7),
-('vault-05', 'Vault 05', 'Pro', 150, 18, 7),
-('vault-06', 'Vault 06', 'Pro Plus', 250, 19, 7),
-('vault-07', 'Vault 07', 'Advanced', 500, 20, 7),
-('vault-08', 'Vault 08', 'Advanced Plus', 750, 21, 7),
-('vault-09', 'Vault 09', 'Elite', 1000, 22, 7),
-('vault-10', 'Vault 10', 'Institutional', 1500, 23, 7)
+('vault-01', 'Vault 01', 'Starter', 10, 40, 30),
+('vault-02', 'Vault 02', 'Starter Plus', 25, 40, 30),
+('vault-03', 'Vault 03', 'Growth', 50, 40, 30),
+('vault-04', 'Vault 04', 'Growth Plus', 100, 40, 30),
+('vault-05', 'Vault 05', 'Pro', 150, 40, 30),
+('vault-06', 'Vault 06', 'Pro Plus', 250, 40, 30),
+('vault-07', 'Vault 07', 'Advanced', 500, 40, 30),
+('vault-08', 'Vault 08', 'Advanced Plus', 750, 40, 30),
+('vault-09', 'Vault 09', 'Elite', 1000, 40, 30),
+('vault-10', 'Vault 10', 'Institutional', 1500, 40, 30)
 ON CONFLICT (vault_id) DO NOTHING;
 
-UPDATE vault_catalog SET cycle_days = 30;
+UPDATE vault_catalog SET weekly_roi_percent = 40, cycle_days = 30;
 `;
 
 const migrate = async () => {
