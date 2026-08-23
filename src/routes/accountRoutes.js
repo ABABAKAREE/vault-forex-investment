@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const pool = require('../db/pool');
 const { authenticate } = require('../middleware/auth');
+const { monthlyRoiFromWeekly, monthlyProfit } = require('../services/vaultMath');
 
 const router = express.Router();
 
@@ -94,7 +95,8 @@ router.get('/summary', authenticate, async (req, res, next) => {
       activeVaults[row.vault_id] = {
         name: row.title,
         capital: Number(row.capital_usd),
-        roi: Number(row.weekly_roi_percent),
+        roi: monthlyRoiFromWeekly(row.weekly_roi_percent),
+        monthlyProfit: monthlyProfit(row.capital_usd, row.weekly_roi_percent),
         status: row.status,
         activatedAt: row.activated_at,
         payoutStart: row.next_payout_at,
