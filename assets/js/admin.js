@@ -41,13 +41,23 @@ adminList?.addEventListener('click', async (event) => {
   const card = event.target.closest('[data-deposit-id]');
   if (!button || !card) return;
   button.disabled = true;
-  const response = await fetch(`/api/manual-deposits/${card.dataset.depositId}/review`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
-    body: JSON.stringify({ decision: button.dataset.review }),
-  });
-  if (response.ok) card.remove();
-  else button.disabled = false;
+  try {
+    const response = await fetch(`/api/manual-deposits/${card.dataset.depositId}/review`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+      body: JSON.stringify({ decision: button.dataset.review }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (response.ok) {
+      card.remove();
+    } else {
+      button.disabled = false;
+      alert(data.message || 'Deposit review failed.');
+    }
+  } catch (_error) {
+    button.disabled = false;
+    alert('Could not reach the server. Please try again.');
+  }
 });
 
 loadPendingDeposits();

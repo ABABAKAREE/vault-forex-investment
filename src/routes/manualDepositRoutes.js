@@ -111,13 +111,41 @@ router.patch('/:id/review', authenticate, requireAdmin, async (req, res, next) =
       [decision, req.user.id, deposit.id]
     );
     if (decision === 'approved') {
-      await client.query('UPDATE accounts SET balance_usd = balance_usd + $1 WHERE user_id = $2', [deposit.amount_usd, deposit.user_id]);
-      await client.query(
-        `UPDATE transactions
-         SET status = 'completed', updated_at = NOW(), metadata = metadata || $1::jsonb
-         WHERE external_reference = $2 AND user_id = $3 AND tx_type = 'deposit'`,
-        [JSON.stringify({ manualDepositId: deposit.id, approved: true }), String(deposit.id), deposit.user_id]
+      const transactionResult = await client.query(
+        `SELECT id, status FROM transactions
+         WHERE external_reference = $1 AND user_id = $2 AND tx_type = 'deposit'
+         FOR UPDATE`,
+        [String(deposit.id), deposit.user_id]
       );
+      const transaction = transactionResult.rows[0];
+      if (transaction?.status === 'pending') {
+        const balanceResult = await client.query(
+          'UPDATE accounts SET balance_usd = balance_usd + $1 WHERE user_id = $2',
+          [deposit.amount_usd, deposit.user_id]
+        );
+        if (balanceResult.rowCount !== 1) {
+          throw new Error('Account not found for manual deposit approval');
+        }
+        await client.query(
+          `UPDATE transactions
+           SET status = 'completed', updated_at = NOW(), metadata = metadata || $1::jsonb
+           WHERE id = $2`,
+          [JSON.stringify({ manualDepositId: deposit.id, approved: true }), transaction.id]
+        );
+      } else if (!transaction) {
+        const balanceResult = await client.query(
+          'UPDATE accounts SET balance_usd = balance_usd + $1 WHERE user_id = $2',
+          [deposit.amount_usd, deposit.user_id]
+        );
+        if (balanceResult.rowCount !== 1) {
+          throw new Error('Account not found for manual deposit approval');
+        }
+        await client.query(
+          `INSERT INTO transactions (user_id, tx_type, channel, amount_usd, status, external_reference, metadata)
+           VALUES ($1, 'deposit', 'manual', $2, 'completed', $3, $4)`,
+          [deposit.user_id, deposit.amount_usd, String(deposit.id), JSON.stringify({ manualDepositId: deposit.id, approved: true })]
+        );
+      }
     } else {
       await client.query(
         `UPDATE transactions
@@ -129,7 +157,7 @@ router.patch('/:id/review', authenticate, requireAdmin, async (req, res, next) =
     await client.query('COMMIT');
     res.json({ ok: true, status: decision });
   } catch (error) {
-    await client.query('ROLLBACK');
+    await client.query('ROLLBACK').catch(() => {});
     next(error);
   } finally {
     client.release();
