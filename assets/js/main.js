@@ -123,10 +123,6 @@ const translatePage = (language) => {
 const applyLanguage = (language) => {
   const selectedLanguage = translations[language] ? language : 'en';
   document.documentElement.lang = selectedLanguage;
-  document.querySelectorAll('[data-i18n]').forEach((node) => {
-    const text = translations[selectedLanguage][node.dataset.i18n];
-    if (text) node.textContent = text;
-  });
   if (languageSelector) languageSelector.value = selectedLanguage;
   translatePage(selectedLanguage);
 };
@@ -137,7 +133,16 @@ languageSelector?.addEventListener('change', () => {
   applyLanguage(languageSelector.value);
 });
 
-const translationObserver = new MutationObserver(() => translatePage(localStorage.getItem('vaultLanguage') || 'en'));
+let translationQueued = false;
+let translatingPage = false;
+const translationObserver = new MutationObserver(() => {
+  if (translatingPage || translationQueued) return;
+  translationQueued = true;
+  window.setTimeout(() => {
+    translationQueued = false;
+    applyLanguage(localStorage.getItem('vaultLanguage') || 'en');
+  }, 0);
+});
 translationObserver.observe(document.body, { childList: true, subtree: true });
 
 const togglePasswordButton = document.getElementById('toggle-password');
