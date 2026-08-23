@@ -1332,6 +1332,8 @@ function initializeMarketCarousel() {
 
   const dots = dotsContainer ? dotsContainer.querySelectorAll('.dot') : [];
   let index = 0;
+  let timerId;
+  let resumeTimerId;
 
   const updateCarousel = () => {
     track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' });
@@ -1354,10 +1356,41 @@ function initializeMarketCarousel() {
     dot.addEventListener('click', () => {
       index = dotIndex;
       updateCarousel();
+      startAutoSlide();
     });
   });
 
   track.addEventListener('scroll', syncActiveDot, { passive: true });
+
+  const startAutoSlide = () => {
+    window.clearInterval(timerId);
+    timerId = window.setInterval(() => {
+      index = (index + 1) % slides.length;
+      updateCarousel();
+    }, 5000);
+  };
+
+  const pauseAutoSlide = () => {
+    window.clearInterval(timerId);
+    window.clearTimeout(resumeTimerId);
+  };
+
+  const resumeAutoSlide = () => {
+    window.clearTimeout(resumeTimerId);
+    resumeTimerId = window.setTimeout(startAutoSlide, 3000);
+  };
+
+  track.addEventListener('mouseenter', pauseAutoSlide);
+  track.addEventListener('mouseleave', resumeAutoSlide);
+  track.addEventListener('touchstart', pauseAutoSlide, { passive: true });
+  track.addEventListener('touchend', resumeAutoSlide, { passive: true });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) pauseAutoSlide();
+    else startAutoSlide();
+  });
+
+  updateCarousel();
+  startAutoSlide();
 
 }
 
