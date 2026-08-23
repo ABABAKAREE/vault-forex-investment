@@ -1263,10 +1263,9 @@ function initializeMarketCarousel() {
 
   const dots = dotsContainer ? dotsContainer.querySelectorAll('.dot') : [];
   let index = 0;
-  let timerId;
 
   const updateCarousel = () => {
-    slides[index]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' });
     dots.forEach((dot, dotIndex) => {
       dot.classList.toggle('active', dotIndex === index);
     });
@@ -1282,37 +1281,22 @@ function initializeMarketCarousel() {
     }
   };
 
-  const startAutoSlide = () => {
-    timerId = window.setInterval(() => {
-      index = (index + 1) % slides.length;
-      updateCarousel();
-    }, 4800);
-  };
-
-  const stopAutoSlide = () => {
-    if (timerId) {
-      window.clearInterval(timerId);
-      timerId = undefined;
-    }
-  };
-
   dots.forEach((dot, dotIndex) => {
     dot.addEventListener('click', () => {
       index = dotIndex;
       updateCarousel();
-      stopAutoSlide();
-      startAutoSlide();
     });
   });
 
-  track.addEventListener('mouseenter', stopAutoSlide);
-  track.addEventListener('mouseleave', startAutoSlide);
-  track.addEventListener('touchstart', stopAutoSlide, { passive: true });
-  track.addEventListener('touchend', startAutoSlide, { passive: true });
   track.addEventListener('scroll', syncActiveDot, { passive: true });
 
-  updateCarousel();
-  startAutoSlide();
+  dots.forEach((dot, dotIndex) => dot.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      index = dotIndex;
+      updateCarousel();
+    }
+  }));
 }
 
 function initializeTradingViewWidgets() {
@@ -1359,7 +1343,10 @@ function initializeTradingViewWidgets() {
 
     const from = ticker.slice(0, 3);
     const to = ticker.slice(3, 6);
-    renderPairChart(card);
+    if (!card.dataset.chartInitialized) {
+      renderPairChart(card);
+      card.dataset.chartInitialized = 'true';
+    }
 
     const endDate = new Date();
     const startDate = new Date(endDate);
@@ -1395,7 +1382,6 @@ function initializeTradingViewWidgets() {
 
   cards.forEach((card, index) => {
     window.setTimeout(() => fetchPairData(card), index * 250);
-    window.setInterval(() => fetchPairData(card), 60000);
   });
 }
 
