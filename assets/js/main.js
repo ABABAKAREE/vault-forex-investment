@@ -38,9 +38,6 @@ const translations = {
   fr: { home: 'Accueil', marketplace: 'Marché', community: 'Communauté', mine: 'Profil', settings: 'Paramètres', account: 'Mon compte', language: 'Langue', save: 'Enregistrer le profil', fullName: 'Nom complet', phone: 'Numéro de téléphone', email: 'Adresse e-mail', accountId: 'Numéro / ID du compte', registrationDate: "Date d'inscription", logout: 'Déconnexion', logoutNow: 'Se déconnecter', transactions: 'Transactions', depositStatus: 'Statut du dépôt', accountHistory: 'Historique du compte' },
 };
 
-  hydrateProfile();
-  hydrateProfile();
-
 const applyLanguage = (language) => {
   const selectedLanguage = translations[language] ? language : 'en';
   document.documentElement.lang = selectedLanguage;
