@@ -1325,7 +1325,9 @@ function initializeMarketCarousel() {
   if (dotsContainer) {
     dotsContainer.innerHTML = '';
     slides.forEach((_, slideIndex) => {
-      const dot = document.createElement('span');
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', `Show market slide ${slideIndex + 1}`);
       dot.className = `dot${slideIndex === 0 ? ' active' : ''}`;
       dotsContainer.appendChild(dot);
     });
@@ -1360,13 +1362,6 @@ function initializeMarketCarousel() {
 
   track.addEventListener('scroll', syncActiveDot, { passive: true });
 
-  dots.forEach((dot, dotIndex) => dot.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      index = dotIndex;
-      updateCarousel();
-    }
-  }));
 }
 
 function initializeTradingViewWidgets() {

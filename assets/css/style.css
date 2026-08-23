@@ -1953,10 +1953,19 @@ h3,
 }
 
 .dot {
+  display: block;
   width: 8px;
   height: 8px;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
   background: #3a4358;
+  cursor: pointer;
+}
+
+.dot:focus-visible {
+  outline: 2px solid var(--vault-primary);
+  outline-offset: 3px;
 }
 
 .dot.active {
