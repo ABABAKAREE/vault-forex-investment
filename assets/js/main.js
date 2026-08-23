@@ -38,6 +38,88 @@ const translations = {
   fr: { home: 'Accueil', marketplace: 'Marché', community: 'Communauté', mine: 'Profil', settings: 'Paramètres', account: 'Mon compte', language: 'Langue', save: 'Enregistrer le profil', fullName: 'Nom complet', phone: 'Numéro de téléphone', email: 'Adresse e-mail', accountId: 'Numéro / ID du compte', registrationDate: "Date d'inscription", logout: 'Déconnexion', logoutNow: 'Se déconnecter', transactions: 'Transactions', depositStatus: 'Statut du dépôt', accountHistory: 'Historique du compte' },
 };
 
+const interfaceText = {
+  'Vault Invest Home': ['Nyumbani Vault Invest', 'Accueil Vault Invest'],
+  'Trade Smarter. Grow Weekly.': ['Fanya biashara kwa busara. Kua kila wiki.', 'Tradez plus intelligemment. Grandissez chaque semaine.'],
+  'Track wallet activity, follow the market, and activate premium vaults from one refined workspace.': ['Fuatilia pochi, soko, na vault za malipo kutoka sehemu moja.', 'Suivez le portefeuille, le marché et activez des coffres depuis un espace unique.'],
+  'Live Signals': ['Ishara za Moja kwa Moja', 'Signaux en direct'],
+  'Fast Payouts': ['Malipo ya Haraka', 'Paiements rapides'],
+  'ACTIVE TRADING PAIRS': ['JOZI ZA BIASHARA', 'Paires de trading actives'],
+  'Live forex overview with embedded candlestick charts': ['Muhtasari wa forex wenye chati za mishumaa', 'Aperçu forex avec graphiques en chandeliers'],
+  'RECENT ACTIVITY': ['SHUGHULI ZA HIVI KARIBUNI', 'ACTIVITÉ RÉCENTE'],
+  'Weekly Sentiment': ['Mwelekeo wa Wiki', 'Tendance hebdomadaire'],
+  'HOW VAULT INVEST WORKS': ['JINSI VAULT INVEST INAVYOFANYA KAZI', 'COMMENT FONCTIONNE VAULT INVEST'],
+  'From your account to market returns': ['Kutoka akaunti yako hadi faida za soko', 'De votre compte aux rendements du marché'],
+  'Investors fund their accounts. Capital is allocated to automated trading robots operating through prop-firm environments, with returns and agreed percentages paid back to the investor.': ['Wawekezaji huweka fedha kwenye akaunti. Mtaji hupelekwa kwa roboti za biashara zinazojiendesha katika mazingira ya prop firm, kisha faida na asilimia zilizokubaliwa hulipwa kwa mwekezaji.', 'Les investisseurs alimentent leurs comptes. Le capital est confié à des robots de trading automatisés opérant via des prop firms, puis les rendements convenus sont versés à l’investisseur.'],
+  'Fund account': ['Weka fedha', 'Alimenter le compte'],
+  'Automated robots': ['Roboti zinazojiendesha', 'Robots automatisés'],
+  'Investor returns': ['Faida ya mwekezaji', 'Rendements investisseur'],
+  'TOTAL BALANCE': ['SALIO JUMLA', 'SOLDE TOTAL'],
+  'WALLET BALANCE': ['SALIO LA POCHI', 'SOLDE DU PORTEFEUILLE'],
+  'Deposit': ['Weka fedha', 'Dépôt'],
+  'Withdraw': ['Toa fedha', 'Retrait'],
+  'Deposit status': ['Hali ya amana', 'Statut du dépôt'],
+  'Account history': ['Historia ya akaunti', 'Historique du compte'],
+  'Investment Vaults': ['Vault za Uwekezaji', 'Coffres d’investissement'],
+  'Featured vaults for this week': ['Vault maalum za wiki hii', 'Coffres à la une cette semaine'],
+  'Explore tiers': ['Tazama viwango', 'Voir les niveaux'],
+  'Choose a tier that fits your pace': ['Chagua kiwango kinachoendana na kasi yako', 'Choisissez un niveau adapté à votre rythme'],
+  'Browse the available vaults, compare growth targets, and activate a tier with a single tap.': ['Vinjari vault, linganisha malengo ya ukuaji, na washa kiwango kwa mguso mmoja.', 'Parcourez les coffres, comparez les objectifs et activez un niveau en un geste.'],
+  'My Account': ['Akaunti Yangu', 'Mon compte'],
+  'Manage your profile in one focused view': ['Dhibiti wasifu wako sehemu moja', 'Gérez votre profil depuis un seul espace'],
+  'Keep your personal details, account reference, and password controls secure and easy to update.': ['Weka taarifa zako, kitambulisho cha akaunti na nenosiri salama na rahisi kusasisha.', 'Gardez vos informations, votre référence de compte et votre mot de passe sécurisés et faciles à modifier.'],
+  'Settings': ['Mipangilio', 'Paramètres'],
+  'Fine-tune the experience to your preference': ['Rekebisha matumizi kulingana na upendeleo wako', 'Personnalisez votre expérience selon vos préférences'],
+  'Theme Toggle': ['Badilisha mandhari', 'Changer de thème'],
+  'Language Selector': ['Kichagua lugha', 'Sélecteur de langue'],
+  'Choose your preferred display language.': ['Chagua lugha unayopendelea.', 'Choisissez votre langue d’affichage.'],
+  'Logout': ['Toka', 'Déconnexion'],
+  'Logout Now': ['Toka Sasa', 'Se déconnecter'],
+  'Community': ['Jamii', 'Communauté'],
+  'Stay close to the market.': ['Kaa karibu na soko.', 'Restez proche du marché.'],
+  'Follow platform updates, member events, and the ideas shaping our next move.': ['Fuatilia taarifa za jukwaa, matukio ya wanachama, na mawazo ya hatua yetu inayofuata.', 'Suivez les actualités, les événements et les idées qui façonnent notre prochaine étape.'],
+  'Admin Dashboard': ['Dashibodi ya Admin', 'Tableau de bord administrateur'],
+  'Deposit Review': ['Ukaguzi wa Amana', 'Vérification des dépôts'],
+  'Review transaction IDs and receipt images before crediting wallets.': ['Kagua vitambulisho vya miamala na risiti kabla ya kuongeza salio.', 'Vérifiez les identifiants et reçus avant de créditer les portefeuilles.'],
+  'Back to Home': ['Rudi Nyumbani', 'Retour à l’accueil'],
+  'Pending': ['Inasubiri', 'En attente'],
+  'Approved': ['Imeidhinishwa', 'Approuvé'],
+  'Rejected': ['Imekataliwa', 'Rejeté'],
+  'Approve': ['Idhinisha', 'Approuver'],
+  'Reject': ['Kataa', 'Rejeter'],
+  'Delete': ['Futa', 'Supprimer'],
+};
+
+const translatePage = (language) => {
+  const selectedLanguage = translations[language] ? language : 'en';
+  const replacementIndex = selectedLanguage === 'sw' ? 0 : selectedLanguage === 'fr' ? 1 : -1;
+  if (replacementIndex < 0) {
+    document.querySelectorAll('[data-i18n-source]').forEach((node) => {
+      node.textContent = node.dataset.i18nSource;
+    });
+  } else {
+    const translateNode = (node) => {
+      if (node.dataset.i18nSource === undefined) node.dataset.i18nSource = node.textContent.trim();
+      const source = node.dataset.i18nSource;
+      const translation = interfaceText[source]?.[replacementIndex];
+      if (translation && node.textContent.trim() !== translation) node.textContent = translation;
+    };
+    document.querySelectorAll('body *').forEach((node) => {
+      if (node.children.length === 0 && node.textContent.trim()) translateNode(node);
+    });
+  }
+  document.querySelectorAll('[data-i18n]').forEach((node) => {
+    const text = translations[selectedLanguage][node.dataset.i18n];
+    if (text) node.textContent = text;
+  });
+  document.querySelectorAll('input[placeholder], [aria-label]').forEach((node) => {
+    const attribute = node.hasAttribute('placeholder') ? 'placeholder' : 'aria-label';
+    const sourceKey = `${attribute}:${node.getAttribute(attribute)}`;
+    const translation = interfaceText[sourceKey]?.[replacementIndex];
+    if (translation) node.setAttribute(attribute, translation);
+  });
+};
+
 const applyLanguage = (language) => {
   const selectedLanguage = translations[language] ? language : 'en';
   document.documentElement.lang = selectedLanguage;
@@ -46,6 +128,7 @@ const applyLanguage = (language) => {
     if (text) node.textContent = text;
   });
   if (languageSelector) languageSelector.value = selectedLanguage;
+  translatePage(selectedLanguage);
 };
 
 applyLanguage(savedLanguage || 'en');
@@ -53,6 +136,9 @@ languageSelector?.addEventListener('change', () => {
   localStorage.setItem('vaultLanguage', languageSelector.value);
   applyLanguage(languageSelector.value);
 });
+
+const translationObserver = new MutationObserver(() => translatePage(localStorage.getItem('vaultLanguage') || 'en'));
+translationObserver.observe(document.body, { childList: true, subtree: true });
 
 const togglePasswordButton = document.getElementById('toggle-password');
 const editPasswordButton = document.getElementById('edit-password');
