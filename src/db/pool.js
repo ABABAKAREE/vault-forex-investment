@@ -2,9 +2,9 @@ const { Pool } = require('pg');
 const { databaseUrl } = require('../config/env');
 
 const vaultSeed = [
-  { vault_id: 'vault-01', title: 'Vault 01', tier: 'Starter', capital_usd: 10, weekly_roi_percent: 55, cycle_days: 30 },
-  { vault_id: 'vault-02', title: 'Vault 02', tier: 'Starter Plus', capital_usd: 25, weekly_roi_percent: 55, cycle_days: 30 },
-  { vault_id: 'vault-03', title: 'Vault 03', tier: 'Growth', capital_usd: 50, weekly_roi_percent: 55, cycle_days: 30 },
+  { vault_id: 'vault-01', title: 'Vault 01', tier: 'Starter', capital_usd: 10, weekly_roi_percent: 200, cycle_days: 14, payout_installments: 2 },
+  { vault_id: 'vault-02', title: 'Vault 02', tier: 'Starter Plus', capital_usd: 25, weekly_roi_percent: 200, cycle_days: 14, payout_installments: 2 },
+  { vault_id: 'vault-03', title: 'Vault 03', tier: 'Growth', capital_usd: 50, weekly_roi_percent: 200, cycle_days: 14, payout_installments: 2 },
   { vault_id: 'vault-04', title: 'Vault 04', tier: 'Growth Plus', capital_usd: 100, weekly_roi_percent: 40, cycle_days: 30 },
   { vault_id: 'vault-05', title: 'Vault 05', tier: 'Pro', capital_usd: 150, weekly_roi_percent: 40, cycle_days: 30 },
   { vault_id: 'vault-06', title: 'Vault 06', tier: 'Pro Plus', capital_usd: 250, weekly_roi_percent: 40, cycle_days: 30 },
@@ -227,7 +227,7 @@ const createMockClient = (state) => ({
       return Promise.resolve({ rows: vault ? [vault] : [], rowCount: vault ? 1 : 0, command: 'SELECT' });
     }
 
-    if (upper.includes('SELECT VAULT_ID, TITLE, TIER, CAPITAL_USD, WEEKLY_ROI_PERCENT, CYCLE_DAYS FROM VAULT_CATALOG')) {
+    if (upper.includes('SELECT VAULT_ID, TITLE, TIER, CAPITAL_USD, WEEKLY_ROI_PERCENT, CYCLE_DAYS')) {
       return Promise.resolve({ rows: this.state.vaultCatalog.map((vault) => ({ ...vault })), rowCount: this.state.vaultCatalog.length, command: 'SELECT' });
     }
 

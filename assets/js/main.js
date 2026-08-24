@@ -388,16 +388,16 @@ const portfolioState = {
 };
 
 const vaultCatalog = {
-  'vault-01': { name: 'Vault 01', tier: 'Starter', capital: 10, roi: 55, totalProfit: 5.5 },
-  'vault-02': { name: 'Vault 02', tier: 'Starter Plus', capital: 25, roi: 55, totalProfit: 13.75 },
-  'vault-03': { name: 'Vault 03', tier: 'Growth', capital: 50, roi: 55, totalProfit: 27.5 },
-  'vault-04': { name: 'Vault 04', tier: 'Growth Plus', capital: 100, roi: 40, totalProfit: 40 },
-  'vault-05': { name: 'Vault 05', tier: 'Pro', capital: 150, roi: 40, totalProfit: 60 },
-  'vault-06': { name: 'Vault 06', tier: 'Pro Plus', capital: 250, roi: 40, totalProfit: 100 },
-  'vault-07': { name: 'Vault 07', tier: 'Advanced', capital: 500, roi: 40, totalProfit: 200 },
-  'vault-08': { name: 'Vault 08', tier: 'Advanced Plus', capital: 750, roi: 40, totalProfit: 300 },
-  'vault-09': { name: 'Vault 09', tier: 'Elite', capital: 1000, roi: 40, totalProfit: 400 },
-  'vault-10': { name: 'Vault 10', tier: 'Institutional', capital: 1500, roi: 40, totalProfit: 600 },
+  'vault-01': { name: 'Vault 01', tier: 'Starter', capital: 10, roi: 200, totalProfit: 20, payoutAmount: 10, payoutFrequency: 'bi-weekly' },
+  'vault-02': { name: 'Vault 02', tier: 'Starter Plus', capital: 25, roi: 200, totalProfit: 50, payoutAmount: 25, payoutFrequency: 'bi-weekly' },
+  'vault-03': { name: 'Vault 03', tier: 'Growth', capital: 50, roi: 200, totalProfit: 100, payoutAmount: 50, payoutFrequency: 'bi-weekly' },
+  'vault-04': { name: 'Vault 04', tier: 'Growth Plus', capital: 100, roi: 40, totalProfit: 40, payoutFrequency: 'monthly' },
+  'vault-05': { name: 'Vault 05', tier: 'Pro', capital: 150, roi: 40, totalProfit: 60, payoutFrequency: 'monthly' },
+  'vault-06': { name: 'Vault 06', tier: 'Pro Plus', capital: 250, roi: 40, totalProfit: 100, payoutFrequency: 'monthly' },
+  'vault-07': { name: 'Vault 07', tier: 'Advanced', capital: 500, roi: 40, totalProfit: 200, payoutFrequency: 'monthly' },
+  'vault-08': { name: 'Vault 08', tier: 'Advanced Plus', capital: 750, roi: 40, totalProfit: 300, payoutFrequency: 'monthly' },
+  'vault-09': { name: 'Vault 09', tier: 'Elite', capital: 1000, roi: 40, totalProfit: 400, payoutFrequency: 'monthly' },
+  'vault-10': { name: 'Vault 10', tier: 'Institutional', capital: 1500, roi: 40, totalProfit: 600, payoutFrequency: 'monthly' },
 };
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -1253,7 +1253,7 @@ const renderVaultActivationState = () => {
     const nextPayout = getNextPayoutDate(joinedAt, cycleDays);
     statusNode.classList.remove('inactive');
     statusNode.classList.add('active');
-    statusNode.textContent = `Status: Active | Next monthly payout ${nextPayout ? payoutDateFormatter.format(nextPayout) : 'Unavailable'}`;
+    statusNode.textContent = `Status: Active | Next ${cycleDays === 14 ? 'bi-weekly' : 'monthly'} payout ${nextPayout ? payoutDateFormatter.format(nextPayout) : 'Unavailable'}`;
     if (button) {
       button.disabled = true;
       button.textContent = 'TIER ACTIVE';
@@ -1278,7 +1278,8 @@ const openVaultModal = (vaultId) => {
     <p><strong>${vault.name}</strong></p>
     <p>Tier: <strong>${vault.tier}</strong></p>
     <p>Capital Required: <strong>${formatUsd(vault.capital)}</strong></p>
-    <p>Monthly ROI: <strong>${vault.roi}%</strong></p>
+    <p>${vault.payoutFrequency === 'bi-weekly' ? 'Bi-weekly ROI' : 'Monthly ROI'}: <strong>${vault.roi}%</strong></p>
+    <p>${vault.payoutFrequency === 'bi-weekly' ? 'Payout every 2 weeks' : 'Monthly Profit'}: <strong>${formatUsd(vault.payoutAmount || vault.totalProfit)}</strong></p>
     <p>Monthly Profit: <strong>${formatUsd(vault.totalProfit)}</strong></p>
     <p>Current Balance: <strong>${formatUsd(portfolioState.balance)}</strong></p>
     <p>Projected Next Monthly Payout: <strong>${nextPayout ? payoutDateFormatter.format(nextPayout) : payoutDateFormatter.format(getNextPayoutDate(new Date(), 30))}</strong></p>
@@ -1382,13 +1383,13 @@ const renderVaultCards = () => {
       const joinedAt = localStorage.getItem(`${VAULT_JOINED_STORAGE_PREFIX}${vaultId}`) || new Date().toISOString();
       const isActive = isVaultActive(vaultId);
       return `
-        <article class="panel vault-card" data-vault-id="${vaultId}" data-joined-at="${joinedAt}" data-payout-cycle-days="30">
+        <article class="panel vault-card" data-vault-id="${vaultId}" data-joined-at="${joinedAt}" data-payout-cycle-days="${vault.payoutFrequency === 'bi-weekly' ? 14 : 30}">
           <span class="promo-badge">${vault.tier.toUpperCase()}</span>
           <h3>${vault.name.toUpperCase()}</h3>
           <p class="vault-row"><span>Capital</span><span>${formatUsd(vault.capital)}</span></p>
-          <p class="vault-row"><span>Monthly ROI</span><span>${vault.roi}%</span></p>
-          <p class="vault-row"><span>Monthly Profit</span><span>${formatUsd(vault.totalProfit)}</span></p>
-          <p class="vault-date">Next Monthly Payout: <span data-next-payout></span></p>
+          <p class="vault-row"><span>${vault.payoutFrequency === 'bi-weekly' ? 'Bi-weekly ROI' : 'Monthly ROI'}</span><span>${vault.roi}%</span></p>
+          <p class="vault-row"><span>${vault.payoutFrequency === 'bi-weekly' ? 'Payout / 2 weeks' : 'Monthly Profit'}</span><span>${formatUsd(vault.payoutAmount || vault.totalProfit)}</span></p>
+          <p class="vault-date">Next ${vault.payoutFrequency === 'bi-weekly' ? 'Bi-weekly' : 'Monthly'} Payout: <span data-next-payout></span></p>
           <p class="vault-activation ${isActive ? 'active' : 'inactive'}" data-vault-status>${isActive ? 'Status: Active' : 'Status: Locked tier'}</p>
           <button class="vault-btn" type="button" data-invest-btn>${isActive ? 'TIER ACTIVE' : 'INVEST NOW'}</button>
         </article>

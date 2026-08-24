@@ -65,7 +65,7 @@ router.get('/summary', authenticate, async (req, res, next) => {
         [req.user.id]
       ),
       pool.query(
-        `SELECT vi.vault_id, vi.capital_usd, vc.weekly_roi_percent, vi.status, vi.activated_at, vi.next_payout_at, vc.title
+        `SELECT vi.vault_id, vi.capital_usd, vc.weekly_roi_percent, vc.cycle_days, vc.payout_installments, vi.status, vi.activated_at, vi.next_payout_at, vc.title
          FROM vault_investments vi
          JOIN vault_catalog vc ON vc.vault_id = vi.vault_id
          WHERE vi.user_id = $1 AND vi.status = 'active'`,
@@ -97,6 +97,8 @@ router.get('/summary', authenticate, async (req, res, next) => {
         capital: Number(row.capital_usd),
         roi: monthlyRoiFromWeekly(row.weekly_roi_percent),
         monthlyProfit: monthlyProfit(row.capital_usd, row.weekly_roi_percent),
+        payoutFrequency: Number(row.cycle_days) === 14 ? 'bi-weekly' : 'monthly',
+        payoutAmount: monthlyProfit(row.capital_usd, row.weekly_roi_percent) / Math.max(1, Number(row.payout_installments)),
         status: row.status,
         activatedAt: row.activated_at,
         payoutStart: row.next_payout_at,

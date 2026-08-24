@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const pool = require('../db/pool');
-const { monthlyRoiFromWeekly } = require('../services/vaultMath');
+const { monthlyRoiFromWeekly, payoutInstallment } = require('../services/vaultMath');
 
 const runPayoutCycle = async () => {
   const client = await pool.connect();
@@ -8,7 +8,7 @@ const runPayoutCycle = async () => {
     await client.query('BEGIN');
 
     const dueInvestments = await client.query(
-      `SELECT vi.id, vi.user_id, vi.vault_id, vi.capital_usd, vc.weekly_roi_percent, vi.next_payout_at, vc.cycle_days
+      `SELECT vi.id, vi.user_id, vi.vault_id, vi.capital_usd, vc.weekly_roi_percent, vc.payout_installments, vi.next_payout_at, vc.cycle_days
        FROM vault_investments vi
        JOIN vault_catalog vc ON vc.vault_id = vi.vault_id
        WHERE vi.status = 'active' AND vi.next_payout_at <= NOW()
@@ -16,7 +16,7 @@ const runPayoutCycle = async () => {
     );
 
     for (const inv of dueInvestments.rows) {
-      const payoutAmount = Number(inv.capital_usd) * (monthlyRoiFromWeekly(inv.weekly_roi_percent) / 100);
+      const payoutAmount = payoutInstallment(inv.capital_usd, monthlyRoiFromWeekly(inv.weekly_roi_percent), inv.payout_installments);
 
       await client.query('UPDATE accounts SET balance_usd = balance_usd + $1 WHERE user_id = $2', [payoutAmount, inv.user_id]);
 
@@ -34,7 +34,7 @@ const runPayoutCycle = async () => {
         `UPDATE vault_investments
          SET next_payout_at = next_payout_at + ($1::text || ' days')::interval
          WHERE id = $2`,
-        [30, inv.id]
+        [Number(inv.cycle_days), inv.id]
       );
     }
 

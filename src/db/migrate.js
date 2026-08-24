@@ -27,8 +27,11 @@ CREATE TABLE IF NOT EXISTS vault_catalog (
   tier TEXT NOT NULL,
   capital_usd NUMERIC(14,2) NOT NULL,
   weekly_roi_percent NUMERIC(6,2) NOT NULL,
-  cycle_days INT NOT NULL DEFAULT 7
+  cycle_days INT NOT NULL DEFAULT 30,
+  payout_installments INT NOT NULL DEFAULT 1
 );
+
+ALTER TABLE vault_catalog ADD COLUMN IF NOT EXISTS payout_installments INT NOT NULL DEFAULT 1;
 
 CREATE TABLE IF NOT EXISTS vault_investments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -105,9 +108,9 @@ EXECUTE FUNCTION set_updated_at();
 
 const seedSql = `
 INSERT INTO vault_catalog (vault_id, title, tier, capital_usd, weekly_roi_percent, cycle_days) VALUES
-('vault-01', 'Vault 01', 'Starter', 10, 40, 30),
-('vault-02', 'Vault 02', 'Starter Plus', 25, 40, 30),
-('vault-03', 'Vault 03', 'Growth', 50, 40, 30),
+('vault-01', 'Vault 01', 'Starter', 10, 200, 14),
+('vault-02', 'Vault 02', 'Starter Plus', 25, 200, 14),
+('vault-03', 'Vault 03', 'Growth', 50, 200, 14),
 ('vault-04', 'Vault 04', 'Growth Plus', 100, 40, 30),
 ('vault-05', 'Vault 05', 'Pro', 150, 40, 30),
 ('vault-06', 'Vault 06', 'Pro Plus', 250, 40, 30),
@@ -119,10 +122,17 @@ ON CONFLICT (vault_id) DO NOTHING;
 
 UPDATE vault_catalog
 SET weekly_roi_percent = CASE
-  WHEN vault_id IN ('vault-01', 'vault-02', 'vault-03') THEN 55
+  WHEN vault_id IN ('vault-01', 'vault-02', 'vault-03') THEN 200
   ELSE 40
 END,
-cycle_days = 30;
+cycle_days = CASE
+  WHEN vault_id IN ('vault-01', 'vault-02', 'vault-03') THEN 14
+  ELSE 30
+END,
+payout_installments = CASE
+  WHEN vault_id IN ('vault-01', 'vault-02', 'vault-03') THEN 2
+  ELSE 1
+END;
 `;
 
 const migrate = async () => {

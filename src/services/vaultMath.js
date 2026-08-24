@@ -33,9 +33,14 @@ const monthlyProfit = (capital, storedRate) => (
   Number(capital) * monthlyRoiFromWeekly(storedRate) / 100
 );
 
+const payoutInstallment = (capital, storedRate, installments = 1) => (
+  monthlyProfit(capital, storedRate) / Math.max(1, Number(installments))
+);
+
 module.exports = {
   nextSundayFromNowUtc,
   nextPayoutByCycle,
   monthlyRoiFromWeekly,
   monthlyProfit,
+  payoutInstallment,
 };
